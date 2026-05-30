@@ -458,11 +458,7 @@ tr:hover td{background:var(--s3)}
       <div><label class="fl">Origen *</label><select class="fi" id="rOrig" style="margin-bottom:0"></select></div>
       <div><label class="fl">Destino *</label><select class="fi" id="rDest" style="margin-bottom:0"></select></div>
     </div>
-    <div style="margin-top:8px"><label class="fl">Días de operación</label>
-      <div class="dia-chips" id="dChips">
-        <div class="dia-chip" data-d="0" onclick="togDia(0)">D</div><div class="dia-chip active" data-d="1" onclick="togDia(1)">L</div><div class="dia-chip active" data-d="2" onclick="togDia(2)">M</div><div class="dia-chip active" data-d="3" onclick="togDia(3)">X</div><div class="dia-chip active" data-d="4" onclick="togDia(4)">J</div><div class="dia-chip active" data-d="5" onclick="togDia(5)">V</div><div class="dia-chip" data-d="6" onclick="togDia(6)">S</div>
-      </div>
-    </div>
+
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeM('mRuta')">Cancelar</button><button class="btn btn-primary" onclick="saveRuta()">✓ Guardar ruta</button></div>
   </div>
 </div>
@@ -817,7 +813,6 @@ function renderMovs(){
 // VUELOS
 function renderVuelos(){
   document.getElementById('rList').innerHTML=S.rutas.length?S.rutas.map(r=>{
-    const diasChips=(r.dias_semana||[]).map(d=>'<span style="width:20px;height:20px;border-radius:50%;background:var(--y);color:var(--blk);font-size:9px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">'+DL[d]+'</span>').join('');
     const aero=r.aerolinea?'<span class="badge b-gray">'+r.aerolinea+'</span>':'';
     const editBtn=isAdmin()?'<button class="btn btn-ghost btn-sm" onclick="editRuta(\''+r.id+'\')">✏ Editar</button>':'';
     const delBtn=isAdmin()?'<button class="btn btn-danger btn-sm" onclick="deleteRuta(\''+r.id+'\')">🗑</button>':'';
@@ -825,7 +820,7 @@ function renderVuelos(){
       +'<div>'
       +'<div style="display:flex;align-items:center;gap:6px"><span style="font-family:monospace;font-size:13px;font-weight:800;color:var(--y)">'+r.numero_vuelo+'</span>'+aero+'</div>'
       +'<div style="font-size:12px;font-weight:600;margin:2px 0">'+(SEDES[r.origen]?.name||r.origen||'—')+' → '+(SEDES[r.destino]?.name||r.destino||'—')+'</div>'
-      +'<div style="display:flex;gap:3px;margin-top:4px">'+diasChips+'</div>'
+
       +'</div>'
       +'<div style="display:flex;flex-direction:column;gap:5px">'+editBtn+delBtn+'</div>'
       +'</div>';
@@ -853,20 +848,22 @@ async function saveVuelo(){
 }
 async function saveRuta(){
   const num=document.getElementById('rNum').value.trim().toUpperCase();
-  const orig=document.getElementById('rOrig').value;const dest=document.getElementById('rDest').value;
-  const dias=[...document.querySelectorAll('.dia-chip.active')].map(c=>parseInt(c.dataset.d));
-  const rid=document.getElementById('rId').value;
-  if(!num||!orig||!dest||!dias.length){showA('rutaAlert','Completa los campos obligatorios','al-err');return;}
-  const body={numero_vuelo:num,aerolinea:document.getElementById('rAero').value||null,origen:orig,destino:dest,dias_semana:dias,activo:true};
+  const orig=document.getElementById('rOrig').value;
+  const dest=document.getElementById('rDest').value;
+  const rid=document.getElementById('rId').value.trim();
+  if(!num||!orig||!dest){showA('rutaAlert','Completa los campos obligatorios','al-err');return;}
+  const body={numero_vuelo:num,aerolinea:document.getElementById('rAero').value||null,origen:orig,destino:dest,activo:true};
   try{
     if(rid){
-      await req(`rutas?id=eq.${rid}`,{m:'PATCH',h:{'Prefer':'return=minimal'},b:body});
-      toast('✓ Ruta actualizada','ok');
+      await req('rutas?id=eq.'+rid,{m:'PATCH',h:{'Prefer':'return=minimal'},b:body});
+      toast('✓ Vuelo actualizado','ok');
     } else {
       await req('rutas',{m:'POST',h:{'Prefer':'return=minimal'},b:body});
-      toast('✓ Ruta guardada','ok');
+      toast('✓ Vuelo agregado','ok');
     }
-    closeM('mRuta');S.rutas=await req('rutas?activo=eq.true&order=numero_vuelo.asc');renderVuelos();
+    closeM('mRuta');
+    S.rutas=await req('rutas?activo=eq.true&order=numero_vuelo.asc');
+    renderVuelos();
   }catch(e){showA('rutaAlert','Error: '+e.message,'al-err');}
 }
 
@@ -879,16 +876,12 @@ function editRuta(rid){
   document.getElementById('rOrig').value=r.origen||'';
   document.getElementById('rDest').value=r.destino||'';
 
-  // Set dias chips
-  document.querySelectorAll('.dia-chip').forEach(c=>{
-    const d=parseInt(c.dataset.d);
-    c.classList.toggle('active',(r.dias_semana||[]).includes(d));
-  });
+
   document.getElementById('rutaAlert').className='hidden';
   document.getElementById('mRutaTitle').textContent='Agregar vuelo al catálogo';
   document.getElementById('rId').value='';
   ['rNum','rAero'].forEach(id=>document.getElementById(id).value='');
-  document.querySelectorAll('.dia-chip').forEach((c,i)=>c.classList.toggle('active',[1,2,3,4,5].includes(parseInt(c.dataset.d))));
+
   document.getElementById('rutaAlert').className='hidden';
   document.getElementById('mRuta').classList.remove('hidden');
 }
