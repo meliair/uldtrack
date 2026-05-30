@@ -869,23 +869,15 @@ async function saveRuta(){
 
 function editRuta(rid){
   const r=S.rutas.find(x=>x.id===rid);if(!r)return;
-  document.getElementById('mRutaTitle').textContent='Editar ruta fija';
+  document.getElementById('mRutaTitle').textContent='Editar vuelo';
   document.getElementById('rId').value=rid;
   document.getElementById('rNum').value=r.numero_vuelo||'';
   document.getElementById('rAero').value=r.aerolinea||'';
   document.getElementById('rOrig').value=r.origen||'';
   document.getElementById('rDest').value=r.destino||'';
-
-
-  document.getElementById('rutaAlert').className='hidden';
-  document.getElementById('mRutaTitle').textContent='Agregar vuelo al catálogo';
-  document.getElementById('rId').value='';
-  ['rNum','rAero'].forEach(id=>document.getElementById(id).value='');
-
   document.getElementById('rutaAlert').className='hidden';
   document.getElementById('mRuta').classList.remove('hidden');
 }
-
 async function deleteRuta(rid){
   const r=S.rutas.find(x=>x.id===rid);if(!r)return;
   if(!confirm(`¿Eliminar ruta ${r.numero_vuelo}? Esta acción no se puede deshacer.`))return;
