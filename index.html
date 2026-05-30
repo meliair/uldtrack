@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#111111">
+<title>ULDTrack — Mercado Libre</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--y:#FFE600;--yd:#CCB800;--blk:#0D0D0D;--s1:#161616;--s2:#1E1E1E;--s3:#272727;--s4:#323232;--bd:#3A3A3A;--bd2:#4A4A4A;--tx:#F0F0F0;--tx2:#A0A0A0;--tx3:#5A5A5A;--ok:#22C55E;--okb:rgba(34,197,94,.12);--w1:#F59E0B;--w1b:rgba(245,158,11,.12);--w2:#EF4444;--w2b:rgba(239,68,68,.12);--w3:#A855F7;--w3b:rgba(168,85,247,.12);--info:#3B82F6;--infob:rgba(59,130,246,.12)}
+html,body{height:100%;background:var(--blk);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100vh}
+.topbar{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 14px;display:flex;align-items:center;justify-content:space-between;height:52px;flex-shrink:0;z-index:50}
+.logo-icon{width:30px;height:30px;background:var(--y);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:var(--blk)}
+.logo-text{font-size:15px;font-weight:700;margin-left:8px}.logo-text span{color:var(--y)}
+.top-right{display:flex;align-items:center;gap:6px}
+.user-chip{display:flex;align-items:center;gap:5px;background:var(--s2);border:1px solid var(--bd);border-radius:50px;padding:3px 10px 3px 3px}
+.user-dot{width:24px;height:24px;border-radius:50%;background:var(--y);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:var(--blk)}
+.user-name{font-size:11px;font-weight:600;color:var(--tx)}
+.user-role{font-size:9px;color:var(--tx3)}
+.sede-badge{background:rgba(255,230,0,.1);border:1px solid rgba(255,230,0,.2);color:var(--y);font-size:10px;font-weight:700;padding:3px 8px;border-radius:50px}
+.icon-btn{width:30px;height:30px;border:1px solid var(--bd);border-radius:7px;background:transparent;cursor:pointer;color:var(--tx2);display:flex;align-items:center;justify-content:center;font-size:15px}
+.icon-btn:hover{background:var(--s2)}
+.top-nav{background:var(--s1);border-bottom:1px solid var(--bd);display:flex;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.top-nav::-webkit-scrollbar{display:none}
+.tnav-btn{padding:10px 14px;font-size:12px;font-weight:500;color:var(--tx3);cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.tnav-btn.active{color:var(--y);border-bottom-color:var(--y)}
+.bottom-nav{background:var(--s1);border-bottom:1px solid var(--bd);display:flex;flex-shrink:0;overflow-x:auto;scrollbar-width:none}.bottom-nav::-webkit-scrollbar{display:none}
+.bnav-btn{flex:0 0 auto;min-width:56px;padding:8px 10px;border:none;background:transparent;color:var(--tx3);cursor:pointer;display:flex;flex-direction:row;align-items:center;gap:5px;font-size:11px;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap}
+.bnav-btn.active{color:var(--y);border-bottom-color:var(--y)}
+.bnav-icon{font-size:14px;line-height:1}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.page{display:none;padding:14px}.page.active{display:block}
+#pg-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:var(--blk)}
+.login-card{background:var(--s2);border:1px solid var(--bd);border-radius:14px;padding:28px 22px;width:100%;max-width:340px}
+.login-logo{text-align:center;margin-bottom:20px}
+.login-icon{width:54px;height:54px;background:var(--y);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:var(--blk);margin:0 auto 10px}
+.login-title{font-size:22px;font-weight:800}.login-title span{color:var(--y)}
+.login-sub{font-size:11px;color:var(--tx3);margin-top:2px}
+.login-tabs{display:flex;gap:0;margin-bottom:16px;background:var(--s3);border-radius:8px;padding:3px}
+.login-tab{flex:1;padding:7px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;border-radius:6px;color:var(--tx3);transition:all .15s}
+.login-tab.active{background:var(--y);color:var(--blk)}
+.fl{display:block;font-size:10px;font-weight:700;color:var(--tx3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.fi{width:100%;background:var(--blk);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--tx);outline:none;transition:border-color .15s;margin-bottom:10px}
+.fi:focus{border-color:var(--y)}
+.fi option{background:var(--s2)}
+.btn-y{width:100%;background:var(--y);color:var(--blk);border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;transition:opacity .15s}
+.btn-y:hover{opacity:.88}
+.btn-y:disabled{opacity:.4;cursor:not-allowed}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:14px}
+.mc{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px 13px}
+.mc-label{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.mc-val{font-size:22px;font-weight:700;line-height:1.1}
+.mc-sub{font-size:11px;color:var(--tx2);margin-top:3px}
+.mc.y .mc-val{color:var(--y)}.mc.ok .mc-val{color:var(--ok)}.mc.w1 .mc-val{color:var(--w1)}.mc.w2 .mc-val{color:var(--w2)}.mc.w3 .mc-val{color:var(--w3)}
+.sede-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px;margin-bottom:14px}
+.sede-card{background:var(--s2);border:1.5px solid var(--bd);border-radius:10px;padding:12px 13px;cursor:pointer;transition:all .15s}
+.sede-card:active{transform:scale(.97)}
+.sede-card.over{border-color:var(--w2)!important}
+.sede-card.warn{border-color:var(--w1)!important}
+.sede-card.selected{border-color:var(--y);box-shadow:0 0 0 1px var(--y)}
+.sede-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:50px;margin-bottom:6px}
+.t-hub{background:rgba(255,230,0,.12);color:var(--y)}
+.t-est{background:var(--infob);color:var(--info)}
+.sede-name{font-size:13px;font-weight:700;margin-bottom:5px}
+.sede-n{font-size:22px;font-weight:800;line-height:1}
+.sede-bar{margin-top:8px;height:3px;border-radius:3px;background:var(--s4);overflow:hidden}
+.uld-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:6px}
+.uld-card{background:var(--s2);border:1.5px solid var(--bd);border-radius:9px;padding:9px 10px;cursor:pointer;transition:all .12s;position:relative;user-select:none}
+.uld-card:active{transform:scale(.95)}
+.uld-card.sel-out{border-color:var(--y)!important;background:rgba(255,230,0,.07)}
+.uld-card.sel-in{border-color:var(--ok)!important;background:rgba(34,197,94,.07)}
+.uld-serial{font-family:monospace;font-size:11px;font-weight:700;color:var(--y);margin-bottom:3px}
+.uld-tipo{font-size:9px;color:var(--tx3);margin-bottom:4px}
+.ins-row{display:flex;gap:3px;margin-bottom:4px}
+.ins-dot{width:14px;height:14px;border-radius:3px;font-size:8px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.ins-ok{background:var(--okb);color:var(--ok)}.ins-no{background:var(--w2b);color:var(--w2)}
+.sel-check{position:absolute;top:5px;right:5px;width:14px;height:14px;border-radius:50%;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.sc-out{background:var(--y);color:var(--blk)}.sc-in{background:var(--ok);color:#fff}
+.action-bar{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.btn{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:all .15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.btn-primary{background:var(--y);color:var(--blk);border-color:var(--y)}.btn-primary:hover{opacity:.88}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--tx2);border-color:var(--bd)}.btn-ghost:hover{background:var(--s3);color:var(--tx)}
+.btn-danger{background:var(--w2b);color:var(--w2);border-color:rgba(239,68,68,.3)}
+.btn-ok{background:var(--okb);color:var(--ok);border-color:rgba(34,197,94,.3)}
+.btn-sm{padding:5px 11px;font-size:11px}
+.sec-title{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.cnt-badge{font-size:10px;font-weight:500;background:var(--s3);color:var(--tx2);padding:2px 7px;border-radius:50px;border:1px solid var(--bd)}
+.divider{height:1px;background:var(--bd);margin:12px 0}
+.mode-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.mode-btn{padding:7px 14px;border-radius:50px;border:1px solid var(--bd);background:transparent;color:var(--tx3);font-size:12px;font-weight:600;cursor:pointer;transition:all .12s}
+.mode-btn.active{background:var(--y);color:var(--blk);border-color:var(--y)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--bd);border-radius:10px;background:var(--s2);margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--s3);font-weight:600;font-size:10px;color:var(--tx3);padding:8px 10px;text-align:left;border-bottom:1px solid var(--bd);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid var(--bd);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--s3)}
+.serial-td{font-family:monospace;font-size:11px;font-weight:700;color:var(--y)}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 7px;border-radius:50px}
+.b-ok{background:var(--okb);color:var(--ok)}.b-w1{background:var(--w1b);color:var(--w1)}.b-w2{background:var(--w2b);color:var(--w2)}.b-w3{background:var(--w3b);color:var(--w3)}.b-gray{background:var(--s3);color:var(--tx2);border:1px solid var(--bd)}.b-y{background:rgba(255,230,0,.12);color:var(--y);border:1px solid rgba(255,230,0,.2)}.b-info{background:var(--infob);color:var(--info)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:flex-end;justify-content:center;z-index:200}
+@media(min-width:600px){.modal-bg{align-items:center;padding:16px}}
+.modal{background:var(--s2);border:1px solid var(--bd);border-radius:14px 14px 0 0;padding:18px;width:100%;max-height:92vh;overflow-y:auto}
+@media(min-width:600px){.modal{border-radius:14px;max-width:460px}}
+.modal-handle{width:36px;height:4px;background:var(--bd2);border-radius:2px;margin:0 auto 14px}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+@media(max-width:400px){.form-row{grid-template-columns:1fr}}
+.alert{padding:10px 12px;border-radius:8px;font-size:12px;margin-bottom:10px;line-height:1.5}
+.al-ok{background:var(--okb);color:var(--ok);border:1px solid rgba(34,197,94,.3)}
+.al-err{background:var(--w2b);color:var(--w2);border:1px solid rgba(239,68,68,.3)}
+.al-warn{background:var(--w1b);color:var(--w1);border:1px solid rgba(245,158,11,.3)}
+.al-info{background:var(--infob);color:var(--info);border:1px solid rgba(59,130,246,.3)}
+.search-box{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;margin-bottom:10px;transition:border-color .15s}
+.search-box:focus-within{border-color:var(--y)}
+.search-box input{border:none;outline:none;background:transparent;font-size:13px;color:var(--tx);width:100%}
+.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;gap:10px;color:var(--tx3);font-size:12px}
+.spin{width:26px;height:26px;border:2px solid var(--bd);border-top-color:var(--y);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.vuelo-card{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.dia-chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.dia-chip{width:30px;height:30px;border-radius:50%;border:1px solid var(--bd);background:transparent;color:var(--tx3);font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.dia-chip.active{background:var(--y);color:var(--blk);border-color:var(--y)}
+.chip-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.chip{padding:4px 11px;border-radius:50px;border:1px solid var(--bd);background:transparent;color:var(--tx3);font-size:11px;font-weight:600;cursor:pointer;transition:all .12s}
+.chip.active{background:var(--y);color:var(--blk);border-color:var(--y)}
+.user-row{background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:10px 13px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 18px;border-radius:50px;font-size:13px;font-weight:700;z-index:999;pointer-events:none;white-space:nowrap;transition:opacity .3s}
+@media(min-width:600px){.toast{bottom:20px}}
+@media print{.topbar,.top-nav,.bottom-nav,.no-print{display:none!important}body{background:#fff!important;color:#000!important}}
+.rep-wrap{background:#fff;color:#111;padding:20px;border-radius:10px}
+.rep-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px}
+.rep-table th{background:#111;color:#FFE600;padding:6px 9px;text-align:left;font-size:10px;text-transform:uppercase}
+.rep-table td{padding:5px 9px;border-bottom:1px solid #eee}
+.top-nav{display:none!important}
+.bottom-nav{display:flex!important}
+.hidden{display:none!important}
+@media(max-width:767px){.no-mobile{display:none!important}}
+.empty{text-align:center;padding:32px;color:var(--tx3);font-size:13px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- LOGIN -->
+<div id="pg-login" style="display:flex">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-icon">✈</div>
+      <div class="login-title">ULD<span>Track</span></div>
+      <div class="login-sub">Control de Unidades de Carga · Mercado Libre</div>
+    </div>
+    <div class="login-tabs">
+      <div class="login-tab active" onclick="setLTab('in')">Entrar</div>
+      <div class="login-tab" onclick="setLTab('reg')">Registrarse</div>
+    </div>
+    <div id="loginAlert" class="hidden"></div>
+    <div id="loginForm">
+      <label class="fl">Correo</label><input class="fi" id="lEmail" type="email" placeholder="correo@empresa.com">
+      <label class="fl">Contraseña</label><input class="fi" id="lPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn-y" onclick="doLogin()">Entrar</button>
+    </div>
+    <div id="regForm" class="hidden">
+      <label class="fl">Nombre</label><input class="fi" id="rNombre" type="text" placeholder="Tu nombre completo">
+      <label class="fl">Correo</label><input class="fi" id="rEmail" type="email" placeholder="correo@empresa.com">
+      <label class="fl">Contraseña</label><input class="fi" id="rPass" type="password" placeholder="Mínimo 6 caracteres">
+      <button class="btn-y" onclick="doRegister()">Crear cuenta</button>
+      <p style="font-size:11px;color:var(--tx3);text-align:center;margin-top:10px">Entrarás como <strong>Lector</strong> hasta que un Admin te asigne rol y sede.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="mainApp" class="hidden" style="flex-direction:column;height:100vh">
+  <div class="topbar">
+    <div style="display:flex;align-items:center">
+      <div class="logo-icon">✈</div>
+      <div>
+        <div class="logo-text" style="margin-left:8px">ULD<span>Track</span></div>
+        <div style="font-size:9px;color:var(--tx3);margin-left:8px" id="topSub"></div>
+      </div>
+    </div>
+    <div class="top-right">
+      <div class="sede-badge" id="topSede"></div>
+      <div class="user-chip">
+        <div class="user-dot" id="topDot">U</div>
+        <div style="margin-left:4px"><div class="user-name" id="topName">—</div><div class="user-role" id="topRole">—</div></div>
+      </div>
+      <button class="icon-btn no-mobile" title="Descargar Excel completo" onclick="exportExcelCompleto()" style="font-size:12px;width:auto;padding:0 8px">📥 Excel</button>
+      <button class="icon-btn" onclick="doLogout()">⏻</button>
+    </div>
+  </div>
+  <div class="top-nav" id="topNav"></div>
+  <div class="bottom-nav" id="bottomNav"></div>
+  <div class="content">
+
+    <!-- STOCK -->
+    <div id="pg-stock" class="page active">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div class="sec-title">Stock <span class="cnt-badge" id="stockTotal">—</span></div>
+        <button class="btn btn-primary btn-sm no-print" id="btnAltaULD" onclick="openM('mAlta')" style="display:none">+ Alta ULD</button>
+      </div>
+      <!-- TOGGLE -->
+      <div style="display:flex;gap:0;background:var(--s3);border-radius:8px;padding:3px;margin-bottom:14px;width:fit-content">
+        <button class="mode-btn active" id="togSede" onclick="setStockView('sede')" style="border-radius:6px;border:none">📍 Por sede</button>
+        <button class="mode-btn" id="togGeneral" onclick="setStockView('general')" style="border-radius:6px;border:none">📋 General</button>
+      </div>
+
+      <!-- VISTA POR SEDE -->
+      <div id="vistaSede">
+        <div class="chip-row" id="stockChips"></div>
+        <div class="sede-grid" id="sedeGrid"></div>
+        <div id="sedeDetail" class="hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+          <div class="sec-title" id="detailTitle"></div>
+          <button class="btn btn-ghost btn-sm" onclick="closeDetail()">← Volver</button>
+        </div>
+        <div id="insumosSede" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px"></div>
+        <div class="mode-row">
+          <button class="mode-btn active" id="modeOut" onclick="setMode('salida')">✈ SALIDA</button>
+          <button class="mode-btn" id="modeIn" onclick="setMode('entrada')">↩ ENTRADA</button>
+        </div>
+        <div class="action-bar">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:20px;font-weight:800;color:var(--y)" id="selN">0</span>
+            <span style="font-size:11px;color:var(--tx2)" id="selTxt">ULDs para salida</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="clearSel()">Limpiar</button>
+            <button class="btn btn-primary btn-sm" id="btnConfirm" onclick="openM('mMov')" disabled>Confirmar ›</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+          <div class="search-box" style="flex:1;min-width:120px;margin-bottom:0"><input id="searchULD" type="text" placeholder="Buscar serial..." oninput="renderULDs()"></div>
+          <select style="background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--tx);outline:none" id="fDays" onchange="renderULDs()">
+            <option value="">Todos</option><option value="ok">OK ≤3d</option><option value="w1">4-7d</option><option value="w2">8-30d</option><option value="w3">>30d</option>
+          </select>
+        </div>
+        <div class="uld-grid" id="uldGrid"></div>
+      </div>
+      </div><!-- end vistaSede -->
+
+      <!-- VISTA GENERAL -->
+      <div id="vistaGeneral" class="hidden">
+        <div class="search-box" style="margin-bottom:10px">
+          <span style="font-size:16px">🔍</span>
+          <input type="text" id="searchStock" placeholder="Buscar por serial, sede, owner..." oninput="renderGlobalULDs()" style="border:none;outline:none;background:transparent;font-size:13px;color:var(--tx);width:100%">
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+          <select id="globalFilterSede" style="background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--tx);outline:none" onchange="renderGlobalULDs()">
+            <option value="">Todas las sedes</option>
+          </select>
+          <select id="globalFilterDays" style="background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--tx);outline:none" onchange="renderGlobalULDs()">
+            <option value="">Todos los estados</option>
+            <option value="ok">✅ OK ≤3d</option>
+            <option value="w1">⚠ Atención 4-7d</option>
+            <option value="w2">🔴 Urgente 8-30d</option>
+            <option value="w3">🟣 Pérdida >30d</option>
+          </select>
+        </div>
+        <div id="batchBar" class="hidden" style="background:var(--s3);border:1px solid var(--y);border-radius:8px;padding:8px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <span style="font-size:12px;color:var(--y);font-weight:700"><span id="batchCount">0</span> ULDs seleccionadas</span>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="clearGlobalSel()">Limpiar</button>
+            <button class="btn btn-primary btn-sm" onclick="moverBatch()">✈ Mover seleccionadas</button>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--tx3);margin-bottom:6px"><span id="globalULDCount">—</span></div>
+        <div class="tbl-wrap"><table>
+          <thead><tr>
+            <th><input type="checkbox" id="chkAll" onclick="toggleAllULDs(this)" style="cursor:pointer"></th>
+            <th>Serial</th><th>Tipo</th><th>Sede</th><th>Owner</th><th>Días</th><th>Estado</th><th></th>
+          </tr></thead>
+          <tbody id="globalULDTable"></tbody>
+        </table></div>
+      </div><!-- end vistaGeneral -->
+
+    </div>
+
+    <!-- VUELOS -->
+    <div id="pg-vuelos" class="page">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div class="sec-title">Vuelos</div>
+        <div style="display:flex;gap:6px" class="no-print">
+          <button class="btn btn-primary btn-sm" onclick="openM('mRuta')">+ Agregar vuelo</button>
+        </div>
+      </div>
+      <div id="rList"></div>
+    </div>
+
+    <!-- MOVIMIENTOS -->
+    <div id="pg-movimientos" class="page">
+      <div class="sec-title">Historial de movimientos</div>
+      <div class="search-box"><input type="text" id="searchMov" placeholder="Buscar sede, serial, vuelo..." oninput="renderMovs()"></div>
+      <div id="movList"></div>
+    </div>
+
+    <!-- KPIs -->
+    <div id="pg-kpis" class="page">
+      <div class="sec-title">Dashboard · KPIs</div>
+      <div class="metric-grid" id="kpiCards"></div>
+      <div class="divider"></div>
+      <div class="sec-title">Estado de la flota</div>
+      <div id="kpiBars" style="margin-bottom:14px"></div>
+      <div class="divider"></div>
+      <div class="sec-title">Por sede</div>
+      <div id="kpiSedes"></div>
+    </div>
+
+    <!-- FACTURACIÓN -->
+    <div id="pg-facturacion" class="page">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <div class="sec-title">Facturación · $5 USD/día/ULD</div>
+        <div style="display:flex;gap:6px" class="no-print">
+          <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 PDF</button>
+          <button class="btn btn-ghost btn-sm" onclick="exportCSV()">📊 Excel</button>
+        </div>
+      </div>
+      <div class="metric-grid" id="facCards"></div>
+      <div class="divider"></div>
+      <div id="repArea"></div>
+    </div>
+
+    <!-- ALTAS/BAJAS -->
+    <div id="pg-altasbajas" class="page">
+      <div class="mode-row">
+        <button class="mode-btn active" id="abAlta" onclick="setAB('alta')">➕ Alta</button>
+        <button class="mode-btn" id="abBaja" onclick="setAB('baja')">🗑 Baja</button>
+        <button class="mode-btn" id="abHist" onclick="setAB('hist')">📋 Historial</button>
+      </div>
+      <div id="ab-alta">
+        <div style="background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:14px">
+          <div id="altaAlert" class="hidden"></div>
+          <div class="form-row">
+            <div><label class="fl">Serial *</label><input class="fi" id="aSerial" placeholder="Ej: PAJ12345, PEB00001..." style="font-family:monospace;color:var(--y);margin-bottom:0" oninput="this.value=this.value.toUpperCase()"></div>
+            <div><label class="fl">Tipo</label><select class="fi" id="aTipo" style="margin-bottom:0"><option value="PAG">PAG</option><option value="PEB">PEB</option></select></div>
+          </div>
+          <div class="form-row" style="margin-top:8px">
+            <div><label class="fl">Sede</label><select class="fi" id="aSede" style="margin-bottom:0"></select></div>
+            <div><label class="fl">Owner</label><select class="fi" id="aOwner" style="margin-bottom:0"><option value="TSM">TSM</option><option value="UNILODE">UNILODE</option><option value="FEDEX">FEDEX</option><option value="OTRO">Otro</option></select></div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn btn-primary" onclick="saveAlta()">✓ Registrar alta</button></div>
+        </div>
+      </div>
+      <div id="ab-baja" class="hidden">
+        <div style="background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:12px">
+          <div id="bajaAlert" class="hidden"></div>
+          <div class="form-row">
+            <div><label class="fl">Serial *</label><input class="fi" id="bSerial" placeholder="PAG00001" style="font-family:monospace;color:var(--y);margin-bottom:0" oninput="this.value=this.value.toUpperCase();buscarBaja()"></div>
+            <div><label class="fl">Motivo *</label><select class="fi" id="bMotivo" style="margin-bottom:0"><option value="">—</option><option value="perdida">Pérdida confirmada</option><option value="dano">Daño irreparable</option><option value="devolucion">Devolución aerolínea</option><option value="robo">Robo</option><option value="otro">Otro</option></select></div>
+          </div>
+          <div id="bajaInfo" class="hidden" style="margin-top:8px"></div>
+          <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn btn-danger" onclick="saveBaja()">⚠ Confirmar baja</button></div>
+        </div>
+        <div class="sec-title">Candidatos <span class="cnt-badge" id="candN">0</span></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Serial</th><th>Sede</th><th>Días</th><th>Estado</th><th></th></tr></thead><tbody id="candTable"></tbody></table></div>
+      </div>
+      <div id="ab-hist" class="hidden">
+        <div class="tbl-wrap"><table><thead><tr><th>Tipo</th><th>Serial</th><th>Sede</th><th>Usuario</th><th>Fecha</th></tr></thead><tbody id="abHistTable"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- USUARIOS -->
+    <div id="pg-usuarios" class="page">
+      <div class="sec-title">Gestión de usuarios</div>
+      <div class="alert al-info" style="margin-bottom:12px">Los usuarios se registran con su correo. Aquí asignas rol y sede.</div>
+      <div id="userList"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL MOVIMIENTO -->
+<div id="mMov" class="modal-bg hidden">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><span id="movTitle">Movimiento</span><button class="icon-btn" onclick="closeM('mMov')">✕</button></div>
+    <div id="movAlert" class="hidden"></div>
+    <div id="movSum" style="background:var(--s3);border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px"></div>
+    <div class="form-row">
+      <div><label class="fl" id="movSedeLbl">Sede destino *</label><select class="fi" id="movSede" style="margin-bottom:0"></select></div>
+      <div>
+        <label class="fl">Vuelo *</label>
+        <select class="fi" id="movVueloSel" style="margin-bottom:0" onchange="onVueloSelChange()">
+          <option value="">— Selecciona un vuelo —</option>
+        </select>
+        <input type="hidden" id="movVuelo" value="">
+      </div>
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <div><label class="fl">Redes</label><input class="fi" type="number" id="movRedes" value="0" min="0" style="margin-bottom:0"></div>
+      <div><label class="fl">Lonas</label><input class="fi" type="number" id="movLonas" value="0" min="0" style="margin-bottom:0"></div>
+    </div>
+    <div style="margin-top:8px"><label class="fl">Notas</label><input class="fi" id="movNotas" placeholder="Observaciones..." style="margin-bottom:0"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeM('mMov')">Cancelar</button><button class="btn btn-primary" onclick="saveMov()">✓ Guardar</button></div>
+  </div>
+</div>
+
+<!-- MODAL ALTA -->
+<div id="mAlta" class="modal-bg hidden">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><span>Alta de ULD</span><button class="icon-btn" onclick="closeM('mAlta')">✕</button></div>
+    <div id="mAltaAlert" class="hidden"></div>
+    <div class="form-row">
+      <div><label class="fl">Serial *</label><input class="fi" id="maSerial" placeholder="Ej: PAJ12345, PEB00001..." style="font-family:monospace;color:var(--y);margin-bottom:0" oninput="this.value=this.value.toUpperCase()"></div>
+      <div><label class="fl">Tipo</label><select class="fi" id="maTipo" style="margin-bottom:0"><option value="PAG">PAG</option><option value="PEB">PEB</option></select></div>
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <div><label class="fl">Sede</label><select class="fi" id="maSede" style="margin-bottom:0"></select></div>
+      <div><label class="fl">Owner</label><select class="fi" id="maOwner" style="margin-bottom:0"><option value="TSM">TSM</option><option value="UNILODE">UNILODE</option><option value="FEDEX">FEDEX</option></select></div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeM('mAlta')">Cancelar</button><button class="btn btn-primary" onclick="saveAltaM()">✓ Registrar</button></div>
+  </div>
+</div>
+
+<!-- MODAL VUELO -->
+<div id="mVuelo" class="modal-bg hidden">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><span>Programar vuelo</span><button class="icon-btn" onclick="closeM('mVuelo')">✕</button></div>
+    <div id="vueloAlert" class="hidden"></div>
+    <div class="form-row">
+      <div><label class="fl">Número vuelo *</label><input class="fi" id="vNum" placeholder="AM1234" style="font-family:monospace;color:var(--y);margin-bottom:0" oninput="this.value=this.value.toUpperCase()"></div>
+      <div><label class="fl">Fecha *</label><input class="fi" type="date" id="vFecha" style="margin-bottom:0"></div>
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <div><label class="fl">Origen *</label><select class="fi" id="vOrig" style="margin-bottom:0"></select></div>
+      <div><label class="fl">Destino *</label><select class="fi" id="vDest" style="margin-bottom:0"></select></div>
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <div><label class="fl">Hora salida</label><input class="fi" type="time" id="vSal" style="margin-bottom:0"></div>
+      <div><label class="fl">Hora llegada</label><input class="fi" type="time" id="vLleg" style="margin-bottom:0"></div>
+    </div>
+    <div style="margin-top:8px"><label class="fl">Cap. máx. ULDs</label><input class="fi" type="number" id="vCap" placeholder="Ej: 8" min="1" style="margin-bottom:0"></div>
+    <div style="margin-top:8px"><label class="fl">Carga especial / artículos ajenos <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--tx3)">(campo libre)</span></label>
+      <textarea class="fi" id="vCarga" placeholder="Ej: Laptop de Ana en PAG00045, documentos RRHH en PAG00032..." rows="3" style="margin-bottom:0;resize:vertical"></textarea></div>
+    <div style="margin-top:8px"><label class="fl">Notas</label><input class="fi" id="vNotas" placeholder="Observaciones..." style="margin-bottom:0"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeM('mVuelo')">Cancelar</button><button class="btn btn-primary" onclick="saveVuelo()">✓ Programar</button></div>
+  </div>
+</div>
+
+<!-- MODAL RUTA -->
+<div id="mRuta" class="modal-bg hidden">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><span id="mRutaTitle">Agregar vuelo al catálogo</span><button class="icon-btn" onclick="closeM('mRuta')">✕</button></div>
+    <input type="hidden" id="rId" value="">
+    <div id="rutaAlert" class="hidden"></div>
+    <div class="form-row">
+      <div><label class="fl">Número vuelo *</label><input class="fi" id="rNum" placeholder="AM1234" style="font-family:monospace;color:var(--y);margin-bottom:0" oninput="this.value=this.value.toUpperCase()"></div>
+      <div><label class="fl">Aerolínea</label><input class="fi" id="rAero" placeholder="Aeromexico" style="margin-bottom:0"></div>
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <div><label class="fl">Origen *</label><select class="fi" id="rOrig" style="margin-bottom:0"></select></div>
+      <div><label class="fl">Destino *</label><select class="fi" id="rDest" style="margin-bottom:0"></select></div>
+    </div>
+    <div style="margin-top:8px"><label class="fl">Días de operación</label>
+      <div class="dia-chips" id="dChips">
+        <div class="dia-chip" data-d="0" onclick="togDia(0)">D</div><div class="dia-chip active" data-d="1" onclick="togDia(1)">L</div><div class="dia-chip active" data-d="2" onclick="togDia(2)">M</div><div class="dia-chip active" data-d="3" onclick="togDia(3)">X</div><div class="dia-chip active" data-d="4" onclick="togDia(4)">J</div><div class="dia-chip active" data-d="5" onclick="togDia(5)">V</div><div class="dia-chip" data-d="6" onclick="togDia(6)">S</div>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeM('mRuta')">Cancelar</button><button class="btn btn-primary" onclick="saveRuta()">✓ Guardar ruta</button></div>
+  </div>
+</div>
+
+<script>
+const SB='https://fpcxdzmamcfycmfwityi.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwY3hkem1hbWNmeWNtZndpdHlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNjg1MzQsImV4cCI6MjA5NDc0NDUzNH0.yZOgpZ4r_TuDpjdzf3Z_TPuGtuquPW_w-C8jS8h73Kk';
+const RATE=5;
+const SEDES={QRO:{name:'Querétaro',type:'hub',max:null},MTY:{name:'Monterrey',type:'est',max:22},CUN:{name:'Cancún',type:'est',max:22},MID:{name:'Mérida',type:'est',max:11},MZT:{name:'Mazatlán',type:'est',max:11},CUL:{name:'Culiacán',type:'est',max:11},LAP:{name:'La Paz',type:'est',max:11},CJS:{name:'Cd. Juárez',type:'est',max:11},CUU:{name:'Chihuahua',type:'est',max:11},TIJ:{name:'Tijuana',type:'est',max:11},HMO:{name:'Hermosillo',type:'est',max:11}};
+const DL=['D','L','M','X','J','V','S'];
+let S={session:null,perfil:null,ulds:[],movs:[],vuelos:[],rutas:[],recepciones:[],selSede:null,mode:'salida',sel:new Set(),chip:'all',vf:'hoy',ab:'alta',stockView:'sede'};
+
+async function req(path,opts={}){
+  const h={'apikey':KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+  if(S.session?.access_token)h['Authorization']='Bearer '+S.session.access_token;
+  else h['Authorization']='Bearer '+KEY;
+  if(opts.h)Object.assign(h,opts.h);
+  const r=await fetch(SB+'/rest/v1/'+path,{headers:h,method:opts.m||'GET',body:opts.b?JSON.stringify(opts.b):undefined});
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||e.error_description||r.statusText);}
+  const t=await r.text();return t?JSON.parse(t):[];
+}
+async function auth(path,body){
+  const r=await fetch(SB+'/auth/v1/'+path,{method:'POST',headers:{'apikey':KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const d=await r.json();if(!r.ok)throw new Error(d.error_description||d.msg||'Error auth');return d;
+}
+
+function dag(iso){return Math.floor((Date.now()-new Date(iso).getTime())/864e5)}
+function horasAgo(iso){return Math.floor((Date.now()-new Date(iso).getTime())/3600000)}
+function llegadaBadge(u){
+  if(!u.llegada_at) return '';
+  const h=horasAgo(u.llegada_at);
+  if(h>24) return '';
+  const nota=u.llegada_nota?` · "${u.llegada_nota}"`:'';
+  return `<div style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.4);border-radius:6px;padding:4px 8px;margin-top:5px;font-size:10px;color:var(--ok);line-height:1.4">📥 Llegó hace ${h===0?'menos de 1h':h+'h'}${nota}</div>`;
+}
+function dc(d){return d<=3?'var(--ok)':d<=7?'var(--w1)':d<=30?'var(--w2)':'var(--w3)'}
+function db(d){return`<span class="badge ${d<=3?'b-ok':d<=7?'b-w1':d<=30?'b-w2':'b-w3'}">${d===0?'hoy':d+'d'}</span>`}
+function fmt(n){return'$'+Math.round(n).toLocaleString('es-MX')}
+function isAdmin(){return['admin','master'].includes(S.perfil?.rol)}
+function canEdit(){return['actualizador','admin','master'].includes(S.perfil?.rol)}
+function showA(id,msg,cls){const el=document.getElementById(id);if(!el)return;el.className='alert '+cls;el.textContent=msg;el.classList.remove('hidden');setTimeout(()=>{if(el.textContent===msg)el.classList.add('hidden')},5000)}
+function openM(id){
+  if(id==='mMov'){prepMov();}
+  else{document.getElementById(id).classList.remove('hidden');}
+}
+function closeM(id){document.getElementById(id).classList.add('hidden')}
+function toast(msg,type){const t=document.createElement('div');t.className='toast';t.style.background=type==='ok'?'var(--ok)':type==='w2'?'var(--w2)':'var(--y)';t.style.color=type==='ok'||type==='w2'?'#fff':'var(--blk)';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),400)},2500)}
+
+function setLTab(t){
+  document.getElementById('loginForm').classList.toggle('hidden',t!=='in');
+  document.getElementById('regForm').classList.toggle('hidden',t!=='reg');
+  document.querySelectorAll('.login-tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='in')||(i===1&&t==='reg')));
+}
+
+async function doLogin(){
+  const e=document.getElementById('lEmail').value.trim(),p=document.getElementById('lPass').value;
+  if(!e||!p){showA('loginAlert','Completa los campos','al-err');return;}
+  try{S.session=await auth('token?grant_type=password',{email:e,password:p});await startApp();}
+  catch(err){showA('loginAlert',err.message,'al-err');}
+}
+async function doRegister(){
+  const n=document.getElementById('rNombre').value.trim(),e=document.getElementById('rEmail').value.trim(),p=document.getElementById('rPass').value;
+  if(!n||!e||!p){showA('loginAlert','Completa todos los campos','al-err');return;}
+  if(p.length<6){showA('loginAlert','Contraseña mínimo 6 caracteres','al-err');return;}
+  try{S.session=await auth('signup',{email:e,password:p,data:{nombre:n}});await startApp();}
+  catch(err){showA('loginAlert',err.message,'al-err');}
+}
+function doLogout(){
+  S={session:null,perfil:null,ulds:[],movs:[],vuelos:[],rutas:[],selSede:null,mode:'salida',sel:new Set(),chip:'all',vf:'hoy',ab:'alta'};
+  document.getElementById('mainApp').style.display='none';
+  document.getElementById('pg-login').style.display='flex';
+}
+
+async function startApp(){
+  document.getElementById('pg-login').style.display='none';
+  const app=document.getElementById('mainApp');app.classList.remove('hidden');app.style.display='flex';
+  try{const uid=S.session?.user?.id;if(uid){const p=await req(`perfiles?id=eq.${uid}`);S.perfil=p[0]||{rol:'lector',sede:null};}}
+  catch{S.perfil={rol:'lector',sede:null};}
+  const nom=S.perfil?.nombre||S.session?.user?.email?.split('@')[0]||'Usuario';
+  document.getElementById('topDot').textContent=nom[0].toUpperCase();
+  document.getElementById('topName').textContent=nom.split(' ')[0];
+  document.getElementById('topRole').textContent=S.perfil?.rol||'lector';
+  document.getElementById('topSede').textContent=S.perfil?.sede?SEDES[S.perfil.sede]?.name||S.perfil.sede:'Sin sede';
+  document.getElementById('topSub').textContent=S.perfil?.sede?(SEDES[S.perfil.sede]?.type==='hub'?'AirHub':'Estación'):'';
+  buildNav();popSelects();
+  const btnAlta=document.getElementById('btnAltaULD');
+  if(btnAlta)btnAlta.style.display=isAdmin()?'':'none';
+  await loadAll();
+}
+
+function buildNav(){
+  const adm=isAdmin();
+  const tabs=[{id:'stock',ic:'📦',lb:'Stock'},{id:'vuelos',ic:'✈',lb:'Vuelos'},{id:'movimientos',ic:'📋',lb:'Movs'},...(adm?[{id:'kpis',ic:'📊',lb:'KPIs'},{id:'facturacion',ic:'💰',lb:'Facturación'},{id:'altasbajas',ic:'➕',lb:'Altas/Bajas'},{id:'usuarios',ic:'👥',lb:'Usuarios'}]:[])]; 
+  document.getElementById('topNav').innerHTML=tabs.map(t=>`<button class="tnav-btn${t.id==='stock'?' active':''}" onclick="switchTab('${t.id}')" id="tn-${t.id}">${t.ic} ${t.lb}</button>`).join('');
+  document.getElementById('bottomNav').innerHTML=tabs.map(t=>`<button class="bnav-btn${t.id==='stock'?' active':''}" onclick="switchTab('${t.id}')" id="bn-${t.id}"><div class="bnav-icon">${t.ic}</div>${t.lb}</button>`).join('');
+}
+function switchTab(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tnav-btn,.bnav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pg-'+id)?.classList.add('active');
+  document.getElementById('tn-'+id)?.classList.add('active');
+  document.getElementById('bn-'+id)?.classList.add('active');
+  if(id==='kpis')renderKPIs();
+  if(id==='facturacion')renderFac();
+  if(id==='movimientos')renderMovs();
+  if(id==='altasbajas')renderAB();
+  if(id==='vuelos')renderVuelos();
+  if(id==='usuarios')renderUsers();
+}
+
+async function loadAll(){
+  try{
+    const sede=S.perfil?.sede;
+    const [u,m,v,r]=await Promise.all([
+      isAdmin()||!sede?req('ulds?activo=eq.true&order=ultima_actualizacion.desc'):req(`ulds?activo=eq.true&sede=eq.${sede}&order=ultima_actualizacion.desc`),
+      isAdmin()||!sede?req('movimientos?order=fecha.desc&limit=300'):req(`movimientos?or=(sede_origen.eq.${sede},sede_destino.eq.${sede})&order=fecha.desc&limit=100`),
+      req('vuelos?order=fecha_vuelo.desc&limit=100'),
+      req('rutas?activo=eq.true&order=numero_vuelo.asc'),
+    ]);
+    S.ulds=u;S.movs=m;S.vuelos=v;S.rutas=r||[];S.recepciones=[];renderStock();
+  }catch(e){toast('Error cargando datos','w2');}
+}
+
+// STOCK
+function renderStockSearch(){
+  const q=(document.getElementById('searchStock')?.value||'').trim().toLowerCase();
+  const res=document.getElementById('stockSearchResults');
+  const grid=document.getElementById('sedeGrid');
+  const chips=document.getElementById('stockChips');
+  if(!q){res.classList.add('hidden');grid.style.display='';chips.style.display='';return;}
+  res.classList.remove('hidden');grid.style.display='none';chips.style.display='none';
+  const list=S.ulds.filter(u=>u.serial.toLowerCase().includes(q));
+  if(!list.length){res.innerHTML='<div class="empty">Sin resultados para "'+q+'"</div>';return;}
+  res.innerHTML=`<div style="font-size:11px;color:var(--tx3);margin-bottom:8px">${list.length} ULD${list.length>1?'s':''} encontrado${list.length>1?'s':''}</div>`+list.map(u=>{
+    const d=dag(u.ultima_actualizacion);
+    const inf=SEDES[u.sede]||{name:u.sede,type:'est'};
+    return`<div style="background:var(--s2);border:1.5px solid ${dc(d)};border-radius:10px;padding:12px 14px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <div>
+        <div style="font-family:monospace;font-size:15px;font-weight:800;color:var(--y);margin-bottom:3px">${u.serial}</div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span class="badge ${inf.type==='hub'?'b-y':'b-info'}">${inf.name}</span>
+          <span class="badge b-gray">${u.tipo}</span>
+          ${u.owner?`<span class="badge b-gray">${u.owner}</span>`:''}
+          ${u.status==='damage'?`<span class="badge b-w2">Dañado</span>`:''}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        ${db(d)}
+        ${canEdit()?`<button class="btn btn-primary btn-sm" onclick="moverDesdeSearch('${u.id}','${u.sede}')">✈ Mover</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function moverDesdeSearch(uid, sedeActual){
+  const u=S.ulds.find(x=>x.id===uid);if(!u)return;
+  S.selSede=sedeActual;S.mode='salida';S.sel=new Set([uid]);
+  clearGlobalSel();
+  // Populate modal
+  document.getElementById('movTitle').textContent=`Mover ${u.serial}`;
+  document.getElementById('movSedeLbl').textContent='Sede destino *';
+  document.getElementById('movSum').innerHTML=`<div style="margin-bottom:5px;font-size:11px;color:var(--tx2)">✈ SALIDA desde <strong>${SEDES[sedeActual]?.name||sedeActual}</strong></div><span style="font-family:monospace;font-size:11px;background:rgba(255,230,0,.1);color:var(--y);border:1px solid rgba(255,230,0,.2);border-radius:50px;padding:2px 9px">${u.serial}</span>`;
+  const otras=Object.keys(SEDES).filter(k=>k!==sedeActual);
+  document.getElementById('movSede').innerHTML=otras.map(k=>`<option value="${k}">${SEDES[k].name}</option>`).join('');
+  ['movVuelo','movNotas'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('movRedes').value='0';document.getElementById('movLonas').value='0';
+  document.getElementById('movAlert').className='hidden';
+  populateVueloSelector();
+  document.getElementById('mMov').classList.remove('hidden');
+}
+
+function renderStock(){
+  const sedes=isAdmin()||!S.perfil?.sede?Object.keys(SEDES):[S.perfil.sede];
+  const total=S.ulds.filter(u=>sedes.includes(u.sede)).length;
+  document.getElementById('stockTotal').textContent=total+' ULDs';
+  document.getElementById('stockChips').innerHTML=[['all','Todas'],['hub','AirHub'],['est','Estaciones']].map(([v,l])=>`<button class="chip${S.chip===v?' active':''}" onclick="setChip('${v}')">${l}</button>`).join('');
+  const show=sedes.filter(s=>(S.chip==='all'||SEDES[s].type===S.chip)&&(s!=='DEV'||isAdmin()));
+  document.getElementById('sedeGrid').innerHTML=show.map(s=>{
+    const inf=SEDES[s];const ul=S.ulds.filter(u=>u.sede===s);const n=ul.length;
+    const cap=inf.max;const pct=cap?Math.min(100,Math.round(n/cap*100)):Math.min(100,Math.round(n/200*100));
+    const over=cap&&n>=cap;const warn=cap&&n>=cap*.8&&!over;
+    const lost=ul.filter(u=>dag(u.ultima_actualizacion)>30).length;
+    const col=over?'var(--w2)':warn?'var(--w1)':'var(--ok)';
+    return`<div class="sede-card${S.selSede===s?' selected':''}${over?' over':''}${warn&&!over?' warn':''}" onclick="selSede('${s}')">
+      <div><span class="sede-tag ${inf.type==='hub'?'t-hub':'t-est'}">${inf.type==='hub'?'AirHub':'Estación'}</span></div>
+      <div class="sede-name">${inf.name}</div>
+      <div class="sede-n" style="color:${over?'var(--w2)':warn?'var(--w1)':'var(--y)'}">${n}</div>
+      <div style="font-size:10px;color:var(--tx3)">${cap?`de ${cap} ULDs · ${pct}%`:'Sin límite'}</div>
+      ${cap?`<div class="sede-bar"><div style="width:${pct}%;height:100%;background:${col};border-radius:3px"></div></div>`:''}
+      <div style="margin-top:5px;display:flex;gap:4px;flex-wrap:wrap">
+        ${over?`<span class="badge b-w2">⚠ Sobre límite</span>`:''}
+        ${lost?`<span class="badge b-w3">⚠ ${lost} perd.</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  renderGlobalULDs();
+}
+function setChip(v){S.chip=v;renderStock();}
+
+function setStockView(v){
+  S.stockView = v;
+  document.getElementById('togSede').classList.toggle('active', v==='sede');
+  document.getElementById('togGeneral').classList.toggle('active', v==='general');
+  document.getElementById('vistaSede').classList.toggle('hidden', v!=='sede');
+  document.getElementById('vistaGeneral').classList.toggle('hidden', v!=='general');
+  if(v==='general') renderGlobalULDs();
+}
+
+function renderGlobalULDs(){
+  const sedes=isAdmin()||!S.perfil?.sede?Object.keys(SEDES):[S.perfil.sede];
+  const fs=document.getElementById('globalFilterSede')?.value||'';
+  const fd=document.getElementById('globalFilterDays')?.value||'';
+  const q=(document.getElementById('searchStock')?.value||'').toLowerCase().trim();
+  // Populate sede filter once
+  const sel=document.getElementById('globalFilterSede');
+  if(sel&&sel.options.length<=1){
+    sedes.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=SEDES[s].name;sel.appendChild(o);});
+  }
+  let list=S.ulds.filter(u=>sedes.includes(u.sede));
+  if(fs)list=list.filter(u=>u.sede===fs);
+  if(fd){list=list.filter(u=>{const d=dag(u.ultima_actualizacion);if(fd==='ok')return d<=3;if(fd==='w1')return d>3&&d<=7;if(fd==='w2')return d>7&&d<=30;if(fd==='w3')return d>30;return true;});}
+  if(q)list=list.filter(u=>u.serial.toLowerCase().includes(q)||(u.owner||'').toLowerCase().includes(q)||(SEDES[u.sede]?.name||'').toLowerCase().includes(q)||u.sede.toLowerCase().includes(q));
+  list.sort((a,b)=>dag(b.ultima_actualizacion)-dag(a.ultima_actualizacion));
+  document.getElementById('globalULDCount').textContent=list.length+' ULD'+(list.length!==1?'s':'')+' encontrada'+(list.length!==1?'s':'');
+  document.getElementById('globalULDTable').innerHTML=list.map(u=>{
+    const d=dag(u.ultima_actualizacion);
+    const movBtn=canEdit()?'<button class="btn btn-primary btn-sm" onclick="moverDesdeSearch(\''+u.id+'\',\''+u.sede+'\')">✈ Mover</button>':'';
+    const statusBadge=u.status==='damage'?'<span class="badge b-w2">Dañado</span>':'<span class="badge b-ok">OK</span>';
+    const sedeBadge='<span class="badge '+(SEDES[u.sede]?.type==='hub'?'b-y':'b-info')+'">'+(SEDES[u.sede]?.name||u.sede)+'</span>';
+    return '<tr id="grow-'+u.id+'">'
+      +'<td><input type="checkbox" class="uld-chk" data-id="'+u.id+'" data-sede="'+u.sede+'" onclick="toggleGlobalULD(\''+u.id+'\',\''+u.sede+'\')"></td>'
+      +'<td class="serial-td">'+u.serial+(u.llegada_at&&horasAgo(u.llegada_at)<=24?'<br><span style="font-size:9px;color:var(--ok);font-family:sans-serif">📥 Llegó hace '+(horasAgo(u.llegada_at)===0?'<1h':horasAgo(u.llegada_at)+'h')+'</span>':'')+'</td>'
+      +'<td><span class="badge b-gray">'+u.tipo+'</span></td>'
+      +'<td>'+sedeBadge+'</td>'
+      +'<td style="font-size:11px;color:var(--tx2)">'+(u.owner||'—')+'</td>'
+      +'<td>'+db(d)+'</td>'
+      +'<td>'+statusBadge+'</td>'
+      +'<td>'+movBtn+'</td>'
+      +'</tr>';
+  }).join('')||'<tr><td colspan="7" class="empty">Sin ULDs</td></tr>';
+}
+function selSede(s){
+  if(!canEdit()){toast('Sin permisos para registrar','w2');return;}
+  S.selSede=s;S.sel=new Set();
+  const ul=S.ulds.filter(u=>u.sede===s);
+  document.getElementById('sedeDetail').classList.remove('hidden');
+  document.getElementById('detailTitle').innerHTML=`${SEDES[s].name} <span class="cnt-badge">${ul.length} ULDs</span>`;
+  const sr=ul.filter(u=>!u.tiene_red).length,sl=ul.filter(u=>!u.tiene_lona).length;
+  document.getElementById('insumosSede').innerHTML=`<div class="mc"><div class="mc-label">Sin red</div><div class="mc-val" style="color:${sr?'var(--w2)':'var(--ok)'}">${sr}</div></div><div class="mc"><div class="mc-label">Sin lona</div><div class="mc-val" style="color:${sl?'var(--w2)':'var(--ok)'}">${sl}</div></div>`;
+  renderULDs();renderStock();
+  setTimeout(()=>document.getElementById('globalULDSection').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+function closeDetail(){S.selSede=null;S.sel=new Set();document.getElementById('sedeDetail').classList.add('hidden');renderStock();}
+function setMode(m){
+  S.mode=m;S.sel=new Set();
+  document.getElementById('modeOut').classList.toggle('active',m==='salida');
+  document.getElementById('modeIn').classList.toggle('active',m==='entrada');
+  document.getElementById('selTxt').textContent=`ULDs para ${m}`;
+  renderULDs();updAB();
+}
+function renderULDs(){
+  if(!S.selSede)return;
+  const q=(document.getElementById('searchULD')?.value||'').toLowerCase();
+  const fd=document.getElementById('fDays')?.value||'';
+  let list=S.ulds.filter(u=>u.sede===S.selSede);
+  if(q)list=list.filter(u=>u.serial.toLowerCase().includes(q));
+  if(fd){list=list.filter(u=>{const d=dag(u.ultima_actualizacion);if(fd==='ok')return d<=3;if(fd==='w1')return d>3&&d<=7;if(fd==='w2')return d>7&&d<=30;if(fd==='w3')return d>30;return true;});}
+  list.sort((a,b)=>dag(b.ultima_actualizacion)-dag(a.ultima_actualizacion));
+  const g=document.getElementById('uldGrid');
+  if(!list.length){g.innerHTML='<div class="empty">Sin ULDs para mostrar</div>';return;}
+  g.innerHTML=list.map(u=>{
+    const d=dag(u.ultima_actualizacion);const isSel=S.sel.has(u.id);
+    const bc=isSel?(S.mode==='salida'?'var(--y)':'var(--ok)'):dc(d);
+    return`<div class="uld-card${isSel?(S.mode==='salida'?' sel-out':' sel-in'):''}" style="border-color:${bc}" onclick="togULD('${u.id}')" id="uc-${u.id}">
+      ${isSel?`<div class="sel-check ${S.mode==='salida'?'sc-out':'sc-in'}">${S.mode==='salida'?'↑':'↓'}</div>`:''}
+      <div class="uld-serial">${u.serial}</div>
+      <div class="uld-tipo">${u.tipo==='PAG'?'Normal':'Media'}</div>
+      <div class="ins-row"><div class="ins-dot ${u.tiene_red!==false?'ins-ok':'ins-no'}">R</div><div class="ins-dot ${u.tiene_lona!==false?'ins-ok':'ins-no'}">L</div></div>
+      <span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:50px;background:${d<=3?'var(--okb)':d<=7?'var(--w1b)':d<=30?'var(--w2b)':'var(--w3b)'};color:${dc(d)}">${d===0?'hoy':d+'d'}</span>
+      ${llegadaBadge(u)}
+    </div>`;
+  }).join('');
+}
+function togULD(id){
+  if(S.sel.has(id))S.sel.delete(id);else S.sel.add(id);
+  const u=S.ulds.find(x=>x.id===id);const card=document.getElementById('uc-'+id);if(!card||!u)return;
+  const isSel=S.sel.has(id);const d=dag(u.ultima_actualizacion);
+  card.className=`uld-card${isSel?(S.mode==='salida'?' sel-out':' sel-in'):''}`;
+  card.style.borderColor=isSel?(S.mode==='salida'?'var(--y)':'var(--ok)'):dc(d);
+  const chk=card.querySelector('.sel-check');
+  if(isSel&&!chk){const c=document.createElement('div');c.className='sel-check '+(S.mode==='salida'?'sc-out':'sc-in');c.textContent=S.mode==='salida'?'↑':'↓';card.insertBefore(c,card.firstChild);}
+  else if(!isSel&&chk)chk.remove();
+  updAB();
+}
+function clearSel(){S.sel=new Set();renderULDs();updAB();}
+function updAB(){const n=S.sel.size;document.getElementById('selN').textContent=n;document.getElementById('btnConfirm').disabled=n===0;}
+
+function prepMov(){
+  const sl=[...S.sel].map(id=>S.ulds.find(u=>u.id===id)).filter(Boolean);
+  document.getElementById('movTitle').textContent=S.mode==='salida'?`Salida — ${S.sel.size} ULDs`:`Entrada — ${S.sel.size} ULDs`;
+  document.getElementById('movSedeLbl').textContent=S.mode==='salida'?'Sede destino *':'Sede origen *';
+  document.getElementById('movSum').innerHTML=`<div style="margin-bottom:5px;font-size:11px;color:var(--tx2)">${S.mode==='salida'?'↑ SALIDA desde':'↓ ENTRADA a'} <strong>${SEDES[S.selSede]?.name}</strong></div><div style="display:flex;flex-wrap:wrap;gap:3px">${sl.map(u=>`<span style="font-family:monospace;font-size:10px;background:rgba(255,230,0,.1);color:var(--y);border:1px solid rgba(255,230,0,.2);border-radius:50px;padding:1px 7px">${u.serial}</span>`).join('')}</div>`;
+  const otras=Object.keys(SEDES).filter(k=>k!==S.selSede);
+  document.getElementById('movSede').innerHTML=otras.map(k=>`<option value="${k}">${SEDES[k].name}</option>`).join('');
+  ['movVuelo','movNotas'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('movRedes').value='0';document.getElementById('movLonas').value='0';
+  document.getElementById('movAlert').className='hidden';
+}
+async function saveMov(){
+  const sd=document.getElementById('movSede').value;
+  const vl=document.getElementById('movVueloSel').value;
+  if(!sd){showA('movAlert','Selecciona la sede destino','al-err');return;}
+  if(!vl){showA('movAlert','Selecciona un vuelo del catálogo','al-err');return;}
+  const sl=[...S.sel].map(id=>S.ulds.find(u=>u.id===id)).filter(Boolean);
+  const now=new Date().toISOString();
+  try{
+    for(const u of sl){
+      const patch={sede:S.mode==='salida'?sd:S.selSede,ultima_actualizacion:now};
+      if(S.mode==='entrada'){patch.llegada_at=now;patch.llegada_nota=document.getElementById('movNotas').value||null;}
+      await req(`ulds?id=eq.${u.id}`,{m:'PATCH',h:{'Prefer':'return=minimal'},b:patch});
+    }
+    await req('movimientos',{m:'POST',h:{'Prefer':'return=minimal'},b:{tipo:S.mode,sede_origen:S.mode==='salida'?S.selSede:sd,sede_destino:S.mode==='salida'?sd:S.selSede,vuelo:document.getElementById('movVueloSel').value,fecha:now,ulds_seriales:sl.map(u=>u.serial),redes_mov:parseInt(document.getElementById('movRedes').value)||0,lonas_mov:parseInt(document.getElementById('movLonas').value)||0,notas:document.getElementById('movNotas').value,usuario:S.perfil?.email||S.perfil?.nombre}});
+    closeM('mMov');clearSel();toast(`✓ ${S.mode} — ${sl.length} ULDs`,'ok');await loadAll();
+  }catch(e){showA('movAlert','Error: '+e.message,'al-err');}
+}
+
+// MOVIMIENTOS
+function renderMovs(){
+  const q=(document.getElementById('searchMov')?.value||'').toLowerCase();
+  let list=S.movs;
+  if(q)list=list.filter(m=>(m.sede_origen||'').toLowerCase().includes(q)||(m.sede_destino||'').toLowerCase().includes(q)||((m.ulds_seriales||[]).join(',').toLowerCase().includes(q))||(m.vuelo||'').toLowerCase().includes(q)||(SEDES[m.sede_origen]?.name||'').toLowerCase().includes(q)||(SEDES[m.sede_destino]?.name||'').toLowerCase().includes(q));
+  document.getElementById('movList').innerHTML=list.length?list.map(m=>{
+    const fd=new Date(m.fecha).toLocaleString('es-MX',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    const ser=m.ulds_seriales||[];
+    return`<div style="background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:10px 12px;margin-bottom:7px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;flex-wrap:wrap;gap:4px">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span class="badge ${m.tipo==='entrada'?'b-ok':'b-y'}">${m.tipo==='entrada'?'↓ ENTRADA':'↑ SALIDA'}</span>
+          <span style="font-size:12px;color:var(--tx2)">${SEDES[m.sede_origen]?.name||m.sede_origen||'—'} → ${SEDES[m.sede_destino]?.name||m.sede_destino||'—'}</span>
+          ${m.vuelo?`<span style="font-family:monospace;font-size:11px;color:var(--y)">${m.vuelo}</span>`:''}
+        </div>
+        <span style="font-size:10px;color:var(--tx3)">${fd}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:3px">${ser.slice(0,5).map(s=>`<span style="font-family:monospace;font-size:10px;background:rgba(255,230,0,.08);color:var(--y);border:1px solid rgba(255,230,0,.15);border-radius:50px;padding:1px 6px">${s}</span>`).join('')}${ser.length>5?`<span style="font-size:10px;color:var(--tx3)">+${ser.length-5} más</span>`:''}</div>
+      ${m.usuario?`<div style="font-size:10px;color:var(--tx3);margin-top:4px">👤 ${m.usuario}</div>`:''}
+    </div>`;
+  }).join(''):'<div class="empty">Sin movimientos</div>';
+}
+
+// VUELOS
+function renderVuelos(){
+  document.getElementById('rList').innerHTML=S.rutas.length?S.rutas.map(r=>{
+    const diasChips=(r.dias_semana||[]).map(d=>'<span style="width:20px;height:20px;border-radius:50%;background:var(--y);color:var(--blk);font-size:9px;font-weight:800;display:inline-flex;align-items:center;justify-content:center">'+DL[d]+'</span>').join('');
+    const aero=r.aerolinea?'<span class="badge b-gray">'+r.aerolinea+'</span>':'';
+    const editBtn=isAdmin()?'<button class="btn btn-ghost btn-sm" onclick="editRuta(\''+r.id+'\')">✏ Editar</button>':'';
+    const delBtn=isAdmin()?'<button class="btn btn-danger btn-sm" onclick="deleteRuta(\''+r.id+'\')">🗑</button>':'';
+    return '<div style="background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'
+      +'<div>'
+      +'<div style="display:flex;align-items:center;gap:6px"><span style="font-family:monospace;font-size:13px;font-weight:800;color:var(--y)">'+r.numero_vuelo+'</span>'+aero+'</div>'
+      +'<div style="font-size:12px;font-weight:600;margin:2px 0">'+(SEDES[r.origen]?.name||r.origen||'—')+' → '+(SEDES[r.destino]?.name||r.destino||'—')+'</div>'
+      +'<div style="display:flex;gap:3px;margin-top:4px">'+diasChips+'</div>'
+      +'</div>'
+      +'<div style="display:flex;flex-direction:column;gap:5px">'+editBtn+delBtn+'</div>'
+      +'</div>';
+  }).join(''):'<div class="empty">Sin vuelos en el catálogo — agrega el primero</div>';
+}
+function openMVuelo(){
+  const hoy=new Date().toISOString().split('T')[0];
+  ['vNum','vCarga','vNotas'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('vFecha').value=hoy;document.getElementById('vCap').value='';
+  document.getElementById('vSal').value='';document.getElementById('vLleg').value='';
+  document.getElementById('vueloAlert').className='hidden';
+  document.getElementById('mVuelo').classList.remove('hidden');
+}
+
+async function saveVuelo(){
+  const num=document.getElementById('vNum').value.trim().toUpperCase();
+  const fecha=document.getElementById('vFecha').value;
+  const orig=document.getElementById('vOrig').value;
+  const dest=document.getElementById('vDest').value;
+  if(!num||!fecha||!orig||!dest){showA('vueloAlert','Completa los campos obligatorios','al-err');return;}
+  if(orig===dest){showA('vueloAlert','Origen y destino no pueden ser iguales','al-err');return;}
+  try{await req('vuelos',{m:'POST',h:{'Prefer':'return=minimal'},b:{numero_vuelo:num,origen:orig,destino:dest,fecha_vuelo:fecha,hora_salida:document.getElementById('vSal').value||null,hora_llegada:document.getElementById('vLleg').value||null,capacidad_ulds:parseInt(document.getElementById('vCap').value)||null,carga_especial:document.getElementById('vCarga').value||null,notas:document.getElementById('vNotas').value||null,status:'programado',usuario:S.perfil?.email}});
+  closeM('mVuelo');toast('✓ Vuelo programado','ok');S.vuelos=await req('vuelos?order=fecha_vuelo.desc&limit=100');renderVuelos();}
+  catch(e){showA('vueloAlert','Error: '+e.message,'al-err');}
+}
+async function saveRuta(){
+  const num=document.getElementById('rNum').value.trim().toUpperCase();
+  const orig=document.getElementById('rOrig').value;const dest=document.getElementById('rDest').value;
+  const dias=[...document.querySelectorAll('.dia-chip.active')].map(c=>parseInt(c.dataset.d));
+  const rid=document.getElementById('rId').value;
+  if(!num||!orig||!dest||!dias.length){showA('rutaAlert','Completa los campos obligatorios','al-err');return;}
+  const body={numero_vuelo:num,aerolinea:document.getElementById('rAero').value||null,origen:orig,destino:dest,dias_semana:dias,activo:true};
+  try{
+    if(rid){
+      await req(`rutas?id=eq.${rid}`,{m:'PATCH',h:{'Prefer':'return=minimal'},b:body});
+      toast('✓ Ruta actualizada','ok');
+    } else {
+      await req('rutas',{m:'POST',h:{'Prefer':'return=minimal'},b:body});
+      toast('✓ Ruta guardada','ok');
+    }
+    closeM('mRuta');S.rutas=await req('rutas?activo=eq.true&order=numero_vuelo.asc');renderVuelos();
+  }catch(e){showA('rutaAlert','Error: '+e.message,'al-err');}
+}
+
+function editRuta(rid){
+  const r=S.rutas.find(x=>x.id===rid);if(!r)return;
+  document.getElementById('mRutaTitle').textContent='Editar ruta fija';
+  document.getElementById('rId').value=rid;
+  document.getElementById('rNum').value=r.numero_vuelo||'';
+  document.getElementById('rAero').value=r.aerolinea||'';
+  document.getElementById('rOrig').value=r.origen||'';
+  document.getElementById('rDest').value=r.destino||'';
+
+  // Set dias chips
+  document.querySelectorAll('.dia-chip').forEach(c=>{
+    const d=parseInt(c.dataset.d);
+    c.classList.toggle('active',(r.dias_semana||[]).includes(d));
+  });
+  document.getElementById('rutaAlert').className='hidden';
+  document.getElementById('mRutaTitle').textContent='Agregar vuelo al catálogo';
+  document.getElementById('rId').value='';
+  ['rNum','rAero'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('.dia-chip').forEach((c,i)=>c.classList.toggle('active',[1,2,3,4,5].includes(parseInt(c.dataset.d))));
+  document.getElementById('rutaAlert').className='hidden';
+  document.getElementById('mRuta').classList.remove('hidden');
+}
+
+async function deleteRuta(rid){
+  const r=S.rutas.find(x=>x.id===rid);if(!r)return;
+  if(!confirm(`¿Eliminar ruta ${r.numero_vuelo}? Esta acción no se puede deshacer.`))return;
+  try{
+    await req(`rutas?id=eq.${rid}`,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{activo:false}});
+    toast('Ruta eliminada','w2');S.rutas=await req('rutas?activo=eq.true&order=numero_vuelo.asc');renderVuelos();
+  }catch(e){toast('Error: '+e.message,'w2');}
+}
+async function updVuelo(id,status){
+  try{await req(`vuelos?id=eq.${id}`,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{status}});S.vuelos=await req('vuelos?order=fecha_vuelo.desc&limit=100');renderVuelos();toast(`✓ ${status}`,'ok');}
+  catch(e){toast('Error: '+e.message,'w2');}
+}
+function togDia(d){document.querySelector(`.dia-chip[data-d="${d}"]`)?.classList.toggle('active');}
+
+// KPIs
+function renderKPIs(){
+  const ul=S.ulds,t=ul.length||1;
+  const ok=ul.filter(u=>dag(u.ultima_actualizacion)<=3).length;
+  const w1=ul.filter(u=>{const d=dag(u.ultima_actualizacion);return d>3&&d<=7}).length;
+  const w2=ul.filter(u=>{const d=dag(u.ultima_actualizacion);return d>7&&d<=30}).length;
+  const w3=ul.filter(u=>dag(u.ultima_actualizacion)>30).length;
+  const dmg=ul.filter(u=>u.status==='damage').length;
+  document.getElementById('kpiCards').innerHTML=`<div class="mc y"><div class="mc-label">Total ULDs</div><div class="mc-val">${ul.length}</div></div><div class="mc ok"><div class="mc-label">Al corriente</div><div class="mc-val">${ok}</div><div class="mc-sub">0–3 días</div></div><div class="mc w1"><div class="mc-label">Atención</div><div class="mc-val">${w1}</div><div class="mc-sub">4–7 días</div></div><div class="mc w2"><div class="mc-label">Urgente</div><div class="mc-val">${w2}</div><div class="mc-sub">8–30 días</div></div><div class="mc w3"><div class="mc-label">Pérdida</div><div class="mc-val">${w3}</div><div class="mc-sub">>30 días</div></div><div class="mc w2"><div class="mc-label">Dañados</div><div class="mc-val">${dmg}</div></div>`;
+  document.getElementById('kpiBars').innerHTML=[['OK 0-3d',ok,'var(--ok)'],['Atención 4-7d',w1,'var(--w1)'],['Urgente 8-30d',w2,'var(--w2)'],['Pérdida >30d',w3,'var(--w3)'],['Dañados',dmg,'var(--w2)']].map(([l,n,c])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:11px;color:var(--tx2);min-width:90px;text-align:right">${l}</div><div style="flex:1;height:6px;background:var(--s4);border-radius:3px;overflow:hidden"><div style="width:${Math.round(n/t*100)}%;height:100%;background:${c};border-radius:3px"></div></div><div style="font-size:11px;font-weight:700;color:${c};min-width:50px">${n} <span style="font-size:9px;color:var(--tx3)">(${Math.round(n/t*100)}%)</span></div></div>`).join('');
+  const bs={};ul.forEach(u=>{bs[u.sede]=(bs[u.sede]||0)+1});
+  document.getElementById('kpiSedes').innerHTML=Object.entries(bs).sort((a,b)=>b[1]-a[1]).map(([s,n])=>{
+    const inf=SEDES[s]||{name:s,max:null};const cap=inf.max;const over=cap&&n>=cap;const pct=cap?Math.min(100,Math.round(n/cap*100)):Math.min(100,Math.round(n/200*100));
+    return`<div style="background:var(--s2);border:1px solid ${over?'var(--w2)':'var(--bd)'};border-radius:9px;padding:10px 12px;margin-bottom:7px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px"><div style="font-size:13px;font-weight:700">${inf.name}</div><div style="text-align:right"><div style="font-size:18px;font-weight:800;color:${over?'var(--w2)':'var(--y)'}">${n}</div>${cap?`<div style="font-size:9px;color:var(--tx3)">${pct}% de ${cap}</div>`:''}</div></div>${cap?`<div style="height:4px;background:var(--s4);border-radius:2px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${over?'var(--w2)':pct>=80?'var(--w1)':'var(--ok)'}"></div></div>`:''} ${over?`<div style="margin-top:5px"><span class="badge b-w2">⚠ Sobre límite</span></div>`:''}</div>`;
+  }).join('');
+}
+
+// FACTURACIÓN
+function renderFac(){
+  const ul=S.ulds;const n=ul.length;
+  const mu=ul.filter(u=>dag(u.ultima_actualizacion)>30||u.status==='damage');
+  const dt=n*RATE;const dm=mu.length*RATE;const du=dt-dm;
+  document.getElementById('facCards').innerHTML=`<div class="mc y"><div class="mc-label">Costo hoy</div><div class="mc-val">${fmt(dt)}</div><div class="mc-sub">USD / día</div></div><div class="mc ok"><div class="mc-label">Costo útil</div><div class="mc-val">${fmt(du)}</div><div class="mc-sub">ULDs activos</div></div><div class="mc w2"><div class="mc-label">Costo muerto</div><div class="mc-val">${fmt(dm)}</div><div class="mc-sub">sin retorno/día</div></div><div class="mc y"><div class="mc-label">Mes estimado</div><div class="mc-val">${fmt(dt*30)}</div><div class="mc-sub">30 días</div></div>`;
+  const bs={};ul.forEach(u=>{if(!bs[u.sede])bs[u.sede]={n:0,mu:0};bs[u.sede].n++;if(dag(u.ultima_actualizacion)>30||u.status==='damage')bs[u.sede].mu++;});
+  const mes=new Date().toLocaleString('es-MX',{month:'long',year:'numeric'});
+  document.getElementById('repArea').innerHTML=`
+    <div style="background:#fff;color:#111;padding:20px;border-radius:10px" id="repDoc">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #FFE600">
+        <div style="font-size:18px;font-weight:800">ULD<span style="color:#FFE600">Track</span></div>
+        <div><div style="font-size:13px;font-weight:700;color:#333">Reporte de facturación</div><div style="font-size:11px;color:#666">${mes} · $${RATE} USD/día/ULD</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:14px">
+        <div style="background:#f5f5f5;border-radius:8px;padding:10px;border-left:3px solid #FFE600"><div style="font-size:9px;text-transform:uppercase;color:#666;margin-bottom:2px">Total ULDs</div><div style="font-size:18px;font-weight:800">${n}</div></div>
+        <div style="background:#f5f5f5;border-radius:8px;padding:10px;border-left:3px solid #FFE600"><div style="font-size:9px;text-transform:uppercase;color:#666;margin-bottom:2px">Costo diario</div><div style="font-size:18px;font-weight:800">${fmt(dt)}</div></div>
+        <div style="background:#f5f5f5;border-radius:8px;padding:10px;border-left:3px solid #FFE600"><div style="font-size:9px;text-transform:uppercase;color:#666;margin-bottom:2px">Mes estimado</div><div style="font-size:18px;font-weight:800">${fmt(dt*30)}</div></div>
+        <div style="background:#fee2e2;border-radius:8px;padding:10px;border-left:3px solid #EF4444"><div style="font-size:9px;text-transform:uppercase;color:#666;margin-bottom:2px">Costo muerto/día</div><div style="font-size:18px;font-weight:800;color:#dc2626">${fmt(dm)}</div></div>
+      </div>
+      <div style="font-size:12px;font-weight:700;margin-bottom:7px">Desglose por sede</div>
+      <table class="rep-table"><thead><tr><th>Sede</th><th>ULDs</th><th>$/día</th><th>$/mes est.</th><th>Muerto/día</th></tr></thead>
+      <tbody>${Object.entries(bs).sort((a,b)=>b[1].n-a[1].n).map(([s,d])=>`<tr><td><strong>${SEDES[s]?.name||s}</strong></td><td>${d.n}</td><td style="color:#b45309;font-weight:700">${fmt(d.n*RATE)}</td><td>${fmt(d.n*RATE*30)}</td><td style="color:${d.mu?'#dc2626':'#666'}">${fmt(d.mu*RATE)}</td></tr>`).join('')}</tbody></table>
+      <div style="font-size:12px;font-weight:700;margin:12px 0 7px">ULDs con costo sin retorno (${mu.length})</div>
+      <table class="rep-table"><thead><tr><th>Serial</th><th>Sede</th><th>Días</th><th>Causa</th><th>Costo acum.</th></tr></thead>
+      <tbody>${mu.sort((a,b)=>dag(b.ultima_actualizacion)-dag(a.ultima_actualizacion)).map(u=>{const d=dag(u.ultima_actualizacion);return`<tr><td style="font-family:monospace;font-weight:700">${u.serial}</td><td>${SEDES[u.sede]?.name||u.sede}</td><td style="color:${d>30?'#7c3aed':'#d97706'};font-weight:600">${d}d</td><td>${u.status==='damage'?'Dañado':'Inactivo'}</td><td style="color:#dc2626;font-weight:600">~${fmt(d*RATE)}</td></tr>`}).join('')}</tbody></table>
+      <div style="margin-top:12px;font-size:10px;color:#999;border-top:1px solid #eee;padding-top:8px">Generado: ${new Date().toLocaleString('es-MX')} · ULDTrack — Mercado Libre</div>
+    </div>`;
+}
+function exportCSV(){
+  const rows=[['Serial','Tipo','Sede','Owner','Status','Días sin actualizar','Última actualización','Costo/día USD','Costo acum. USD']];
+  S.ulds.forEach(u=>{const d=dag(u.ultima_actualizacion);rows.push([u.serial,u.tipo,SEDES[u.sede]?.name||u.sede,u.owner||'',u.status||'ok',d,u.ultima_actualizacion,RATE,d*RATE]);});
+  const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`ULDTrack_${new Date().toISOString().split('T')[0]}.csv`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);toast('✓ CSV descargado','ok');
+}
+
+// ALTAS/BAJAS
+function setAB(t){
+  S.ab=t;['alta','baja','hist'].forEach(x=>{document.getElementById('ab-'+x).classList.toggle('hidden',x!==t);document.getElementById('ab'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('active',x===t);});
+  if(t==='baja')renderCand();if(t==='hist')renderABHist();
+}
+function renderAB(){setAB(S.ab);}
+async function saveAlta(){
+  if(!isAdmin()){showA('altaAlert','Sin permisos — solo admin/master','al-err');return;}
+  const serial=document.getElementById('aSerial').value.toUpperCase().trim();
+  const sede=document.getElementById('aSede').value;
+  if(!serial||serial.length<3){showA('altaAlert','El serial debe tener al menos 3 caracteres','al-err');return;}
+  if(S.ulds.find(u=>u.serial===serial)){showA('altaAlert','Este serial ya existe','al-err');return;}
+  try{await req('ulds',{m:'POST',h:{'Prefer':'return=minimal'},b:{serial,tipo:document.getElementById('aTipo').value,sede,activo:true,ultima_actualizacion:new Date().toISOString(),status:'ok',owner:document.getElementById('aOwner').value,notas:'Alta — '+S.perfil?.email}});
+  showA('altaAlert',`✓ ${serial} dado de alta en ${SEDES[sede]?.name}`,'al-ok');document.getElementById('aSerial').value='';await loadAll();toast('✓ Alta registrada','ok');}
+  catch(e){showA('altaAlert','Error: '+e.message,'al-err');}
+}
+async function saveAltaM(){
+  const serial=document.getElementById('maSerial').value.toUpperCase().trim();
+  const sede=document.getElementById('maSede').value;
+  if(!serial||serial.length<3){showA('mAltaAlert','El serial debe tener al menos 3 caracteres','al-err');return;}
+  if(S.ulds.find(u=>u.serial===serial)){showA('mAltaAlert','Serial ya existe','al-err');return;}
+  try{await req('ulds',{m:'POST',h:{'Prefer':'return=minimal'},b:{serial,tipo:document.getElementById('maTipo').value,sede,activo:true,ultima_actualizacion:new Date().toISOString(),status:'ok',owner:document.getElementById('maOwner').value,notas:'Alta — '+S.perfil?.email}});
+  closeM('mAlta');await loadAll();toast('✓ Alta: '+serial,'ok');}
+  catch(e){showA('mAltaAlert','Error: '+e.message,'al-err');}
+}
+function buscarBaja(){
+  const serial=document.getElementById('bSerial').value.toUpperCase();
+  const u=S.ulds.find(x=>x.serial===serial);const info=document.getElementById('bajaInfo');
+  if(u){const d=dag(u.ultima_actualizacion);info.className='alert al-warn';info.innerHTML=`<strong>${u.serial}</strong> · ${SEDES[u.sede]?.name||u.sede} · ${d}d sin actualizar`;info.classList.remove('hidden');}
+  else info.classList.add('hidden');
+}
+async function saveBaja(){
+  if(!isAdmin()){showA('bajaAlert','Sin permisos — solo admin/master','al-err');return;}
+  const serial=document.getElementById('bSerial').value.toUpperCase().trim();
+  const motivo=document.getElementById('bMotivo').value;
+  const u=S.ulds.find(x=>x.serial===serial);
+  if(!u){showA('bajaAlert','Serial no encontrado','al-err');return;}
+  if(!motivo){showA('bajaAlert','Selecciona el motivo','al-err');return;}
+  if(!confirm(`¿Confirmas dar de baja ${serial}?`))return;
+  try{await req(`ulds?id=eq.${u.id}`,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{activo:false,notas:`Baja: ${motivo} — ${S.perfil?.email}`}});
+  showA('bajaAlert',`✓ ${serial} dado de baja. Se liberan $${RATE}/día.`,'al-ok');document.getElementById('bSerial').value='';document.getElementById('bMotivo').value='';document.getElementById('bajaInfo').classList.add('hidden');await loadAll();renderCand();toast('Baja: '+serial,'w2');}
+  catch(e){showA('bajaAlert','Error: '+e.message,'al-err');}
+}
+function renderCand(){
+  const list=S.ulds.filter(u=>dag(u.ultima_actualizacion)>30||u.status==='damage').sort((a,b)=>dag(b.ultima_actualizacion)-dag(a.ultima_actualizacion));
+  document.getElementById('candN').textContent=list.length;
+  document.getElementById('candTable').innerHTML=list.map(u=>{const d=dag(u.ultima_actualizacion);return`<tr><td class="serial-td">${u.serial}</td><td>${SEDES[u.sede]?.name||u.sede}</td><td>${db(d)}</td><td>${u.status==='damage'?'<span class="badge b-w2">Dañado</span>':'<span class="badge b-w3">Inactivo</span>'}</td><td><button style="padding:3px 8px;border-radius:6px;border:1px solid rgba(239,68,68,.3);background:var(--w2b);color:var(--w2);font-size:10px;font-weight:600;cursor:pointer" onclick="document.getElementById('bSerial').value='${u.serial}';buscarBaja()">Dar baja</button></td></tr>`}).join('')||'<tr><td colspan="5" class="empty">Sin candidatos</td></tr>';
+}
+function renderABHist(){
+  document.getElementById('abHistTable').innerHTML=S.movs.filter(m=>m.tipo==='alta'||m.tipo==='baja').slice(0,50).map(m=>{
+    const fd=new Date(m.fecha).toLocaleString('es-MX',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    return`<tr><td><span class="badge ${m.tipo==='alta'?'b-ok':'b-w2'}">${m.tipo}</span></td><td style="font-family:monospace;font-size:10px">${(m.ulds_seriales||[]).slice(0,2).join(', ')}${(m.ulds_seriales||[]).length>2?` +${(m.ulds_seriales||[]).length-2}`:''}</td><td>${SEDES[m.sede_destino]?.name||m.sede_destino||'—'}</td><td style="font-size:10px;color:var(--tx3)">${m.usuario||'—'}</td><td style="font-size:10px;color:var(--tx3);white-space:nowrap">${fd}</td></tr>`;
+  }).join('')||'<tr><td colspan="5" class="empty">Sin registros</td></tr>';
+}
+
+// USUARIOS
+async function renderUsers(){
+  try{
+    const p=await req('perfiles?order=created_at.desc');
+    document.getElementById('userList').innerHTML=p.length?p.map(u=>`
+      <div class="user-row">
+        <div><div style="font-size:12px;font-weight:600">${u.nombre||'—'}</div><div style="font-size:11px;color:var(--tx2)">${u.email||'—'} · ${SEDES[u.sede]?.name||u.sede||'Sin sede'}</div></div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <select style="background:var(--s3);border:1px solid var(--bd);border-radius:6px;padding:4px 8px;font-size:11px;color:var(--tx);outline:none" onchange="updUser('${u.id}','rol',this.value)">
+            ${['lector','actualizador','admin','master'].map(r=>`<option value="${r}"${u.rol===r?' selected':''}>${r}</option>`).join('')}
+          </select>
+          <select style="background:var(--s3);border:1px solid var(--bd);border-radius:6px;padding:4px 8px;font-size:11px;color:var(--tx);outline:none" onchange="updUser('${u.id}','sede',this.value)">
+            <option value="">Sin sede</option>
+            ${Object.keys(SEDES).map(s=>`<option value="${s}"${u.sede===s?' selected':''}>${SEDES[s].name}</option>`).join('')}
+          </select>
+          ${u.id!==S.session?.user?.id?`<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}','${u.email||u.nombre||'este usuario'}')">🗑</button>`:'<span style="font-size:10px;color:var(--tx3);padding:4px 6px">Tú</span>'}
+        </div>
+      </div>`).join(''):'<div class="empty">Sin usuarios registrados</div>';
+  }catch{document.getElementById('userList').innerHTML='<div class="empty">Error cargando usuarios</div>';}
+}
+async function deleteUser(id, email){
+  if(!confirm(`¿Eliminar al usuario ${email}? Perderá acceso inmediatamente.`))return;
+  try{
+    // Delete from perfiles first
+    await req(`perfiles?id=eq.${id}`,{m:'DELETE',h:{'Prefer':'return=minimal'}});
+    // Delete from Supabase Auth via admin endpoint
+    const res = await fetch(`${SB_URL}/auth/v1/admin/users/${id}`,{
+      method:'DELETE',
+      headers:{'apikey':KEY,'Authorization':'Bearer '+S.session.access_token}
+    });
+    if(!res.ok){
+      // If auth delete fails, at least the profile is gone — user can't log in with role
+      toast('Perfil eliminado. El acceso ha sido revocado.','ok');
+    } else {
+      toast('✓ Usuario eliminado correctamente','ok');
+    }
+    await renderUsers();
+  }catch(e){toast('Error: '+e.message,'w2');}
+}
+
+async function updUser(id,campo,valor){
+  try{await req(`perfiles?id=eq.${id}`,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{[campo]:valor||null}});toast('✓ Actualizado','ok');}
+  catch(e){toast('Error: '+e.message,'w2');}
+}
+
+// ── GLOBAL ULD SELECTION ──
+let globalSel = new Set(); // {id:..., sede:...} stored as JSON strings
+
+function toggleGlobalULD(id, sede){
+  const key = id;
+  const chk = document.querySelector(`.uld-chk[data-id="${id}"]`);
+  if(globalSel.has(key)){
+    globalSel.delete(key);
+    if(chk) chk.checked = false;
+    document.getElementById('grow-'+id)?.style.setProperty('background','');
+  } else {
+    globalSel.add(key);
+    if(chk) chk.checked = true;
+    document.getElementById('grow-'+id)?.style.setProperty('background','rgba(255,230,0,.05)');
+  }
+  updBatchBar();
+}
+
+function toggleAllULDs(el){
+  const chks = document.querySelectorAll('.uld-chk');
+  chks.forEach(c=>{
+    const id = c.dataset.id;
+    if(el.checked){ globalSel.add(id); c.checked=true; document.getElementById('grow-'+id)?.style.setProperty('background','rgba(255,230,0,.05)'); }
+    else { globalSel.delete(id); c.checked=false; document.getElementById('grow-'+id)?.style.setProperty('background',''); }
+  });
+  updBatchBar();
+}
+
+function updBatchBar(){
+  const bar = document.getElementById('batchBar');
+  const n = globalSel.size;
+  document.getElementById('batchCount').textContent = n;
+  bar.classList.toggle('hidden', n === 0);
+}
+
+function clearGlobalSel(){
+  globalSel.clear();
+  document.querySelectorAll('.uld-chk').forEach(c=>c.checked=false);
+  document.querySelectorAll('[id^="grow-"]').forEach(r=>r.style.removeProperty('background'));
+  const chkAll = document.getElementById('chkAll');
+  if(chkAll) chkAll.checked = false;
+  updBatchBar();
+}
+
+function moverBatch(){
+  if(!globalSel.size) return;
+  const ids = [...globalSel];
+  const ulds = ids.map(id=>S.ulds.find(u=>u.id===id)).filter(Boolean);
+  if(!ulds.length) return;
+  // Use sede of first selected as "origen" — mixed sedes allowed
+  const sedes = [...new Set(ulds.map(u=>u.sede))];
+  S.selSede = sedes[0];
+  S.mode = 'salida';
+  S.sel = new Set(ids);
+  // Prep modal
+  document.getElementById('movTitle').textContent = `Mover ${ulds.length} ULD${ulds.length>1?'s':''}`;
+  document.getElementById('movSedeLbl').textContent = 'Sede destino *';
+  document.getElementById('movSum').innerHTML = `<div style="margin-bottom:5px;font-size:11px;color:var(--tx2)">✈ SALIDA desde ${sedes.map(s=>SEDES[s]?.name||s).join(', ')}</div><div style="display:flex;flex-wrap:wrap;gap:3px">${ulds.slice(0,8).map(u=>`<span style="font-family:monospace;font-size:10px;background:rgba(255,230,0,.1);color:var(--y);border:1px solid rgba(255,230,0,.2);border-radius:50px;padding:1px 7px">${u.serial}</span>`).join('')}${ulds.length>8?`<span style="font-size:10px;color:var(--tx3)">+${ulds.length-8} más</span>`:''}</div>`;
+  const otras = Object.keys(SEDES).filter(k=>!sedes.includes(k)||sedes.length>1);
+  document.getElementById('movSede').innerHTML = Object.keys(SEDES).filter(k=>k!==sedes[0]).map(k=>`<option value="${k}">${SEDES[k].name}</option>`).join('');
+  ['movVuelo','movNotas'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('movRedes').value='0';
+  document.getElementById('movLonas').value='0';
+  document.getElementById('movAlert').className='hidden';
+  populateVueloSelector();
+  document.getElementById('mMov').classList.remove('hidden');
+}
+
+function clearGlobalSelUI(){document.querySelectorAll('.uld-chk').forEach(c=>c.checked=false);document.querySelectorAll('[id^="grow-"]').forEach(r=>r.style.removeProperty('background'));const ca=document.getElementById('chkAll');if(ca)ca.checked=false;}
+
+// ── VUELO SELECTOR IN MODAL ──
+function populateVueloSelector(){
+  const sel = document.getElementById('movVueloSel');
+  if(!sel) return;
+  if(!S.rutas||!S.rutas.length){
+    sel.innerHTML='<option value="">⚠ Sin vuelos en catálogo — ve a pestaña Vuelos</option>';
+    document.getElementById('movVuelo').value='';
+    return;
+  }
+  sel.innerHTML = '<option value="">— Selecciona un vuelo —</option>'
+    + S.rutas.map(r=>{
+      const label = r.numero_vuelo + ' · ' + (SEDES[r.origen]?.name||r.origen||'—') + ' → ' + (SEDES[r.destino]?.name||r.destino||'—') + (r.aerolinea?' ('+r.aerolinea+')':'');
+      return '<option value="'+r.numero_vuelo+'">'+label+'</option>';
+    }).join('');
+  document.getElementById('movVuelo').value='';
+}
+
+function onVueloSelChange(){
+  const sel = document.getElementById('movVueloSel');
+  document.getElementById('movVuelo').value = sel.value;
+}
+
+// ── EXCEL COMPLETO ──
+function exportExcelCompleto(){
+  const sep = ',';
+  const q = v => `"${String(v||'').replace(/"/g,'""')}"`;
+  const rows = [];
+
+  // Sheet 1: ULDs
+  rows.push(['=== ULDs ACTIVOS ===']);
+  rows.push(['Serial','Tipo','Sede','Owner','Status','Días sin actualizar','Última actualización','Costo/día USD','Costo acumulado USD']);
+  S.ulds.forEach(u=>{
+    const d=dag(u.ultima_actualizacion);
+    rows.push([u.serial,u.tipo,SEDES[u.sede]?.name||u.sede,u.owner||'',u.status||'ok',d,u.ultima_actualizacion,RATE,d*RATE]);
+  });
+
+  rows.push([]);
+  rows.push(['=== KPIs POR SEDE ===']);
+  rows.push(['Sede','Total ULDs','Límite','% Ocupación','OK (0-3d)','Atención (4-7d)','Urgente (8-30d)','Pérdida (>30d)','Dañados','Costo/día USD','Costo mes est. USD']);
+  Object.keys(SEDES).forEach(s=>{
+    const ul=S.ulds.filter(u=>u.sede===s);
+    const n=ul.length;const cap=SEDES[s].max;
+    const ok=ul.filter(u=>dag(u.ultima_actualizacion)<=3).length;
+    const w1=ul.filter(u=>{const d=dag(u.ultima_actualizacion);return d>3&&d<=7}).length;
+    const w2=ul.filter(u=>{const d=dag(u.ultima_actualizacion);return d>7&&d<=30}).length;
+    const w3=ul.filter(u=>dag(u.ultima_actualizacion)>30).length;
+    const dmg=ul.filter(u=>u.status==='damage').length;
+    rows.push([SEDES[s].name,n,cap||'Sin límite',cap?Math.round(n/cap*100)+'%':'—',ok,w1,w2,w3,dmg,n*RATE,n*RATE*30]);
+  });
+
+  rows.push([]);
+  rows.push(['=== MOVIMIENTOS ===']);
+  rows.push(['Tipo','Origen','Destino','Vuelo','Fecha','ULDs','Usuario','Notas']);
+  S.movs.forEach(m=>{
+    rows.push([m.tipo,SEDES[m.sede_origen]?.name||m.sede_origen||'',SEDES[m.sede_destino]?.name||m.sede_destino||'',m.vuelo||'',(m.fecha||'').replace('T',' ').substring(0,16),(m.ulds_seriales||[]).join(' | '),m.usuario||'',m.notas||'']);
+  });
+
+  rows.push([]);
+  rows.push(['=== VUELOS ===']);
+  rows.push(['Número','Origen','Destino','Fecha','Hora salida','Hora llegada','Capacidad ULDs','Status','Carga especial','Usuario']);
+  S.vuelos.forEach(v=>{
+    rows.push([v.numero_vuelo,SEDES[v.origen]?.name||v.origen||'',SEDES[v.destino]?.name||v.destino||'',v.fecha_vuelo||'',v.hora_salida||'',v.hora_llegada||'',v.capacidad_ulds||'',v.status||'',v.carga_especial||'',v.usuario||'']);
+  });
+
+  const csv = rows.map(r=>r.map(q).join(sep)).join('\n');
+  const blob = new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `ULDTrack_Completo_${new Date().toISOString().split('T')[0]}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  toast('✓ Excel descargado','ok');
+}
+
+// ── RECEPCIONES ──
+function checkRecepcionBanner(){
+  const sede=S.perfil?.sede;
+  // Show banner to: actualizador/admin/master when there are pending recepciones for their sede
+  // Admin/master see all pending
+  const pending = isAdmin()
+    ? S.recepciones
+    : S.recepciones.filter(r=>r.sede_destino===sede);
+  const banner=document.getElementById('recepcionBanner');
+  const detail=document.getElementById('recepcionBannerDetail');
+  if(!banner)return;
+  if(!pending.length){banner.classList.add('hidden');return;}
+  banner.classList.remove('hidden');
+  const total=pending.reduce((s,r)=>(r.ulds_esperados||[]).length+s,0);
+  detail.innerHTML=pending.map(r=>`<span style="margin-right:8px">✈ ${r.vuelo||'Sin vuelo'} · ${SEDES[r.sede_origen]?.name||r.sede_origen}→${SEDES[r.sede_destino]?.name||r.sede_destino} · <strong>${(r.ulds_esperados||[]).length} ULDs</strong></span>`).join('');
+}
+
+function openRecepcionModal(){
+  const sede=S.perfil?.sede;
+  const pending=isAdmin()?S.recepciones:S.recepciones.filter(r=>r.sede_destino===sede);
+  if(!pending.length){toast('Sin recepciones pendientes','ok');return;}
+  // Build list — show each recepcion with checkboxes per ULD
+  document.getElementById('recepcionAlert').className='hidden';
+  document.getElementById('recepcionList').innerHTML=pending.map((r,ri)=>{
+    const serials=r.ulds_esperados||[];
+    return`<div style="background:var(--s3);border-radius:9px;padding:12px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--info)">✈ ${r.vuelo||'Sin vuelo'}</div>
+          <div style="font-size:11px;color:var(--tx2)">${SEDES[r.sede_origen]?.name||r.sede_origen} → ${SEDES[r.sede_destino]?.name||r.sede_destino}</div>
+          <div style="font-size:10px;color:var(--tx3)">${new Date(r.fecha_salida).toLocaleString('es-MX',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="selAllRec(${ri},true)">Todos ✓</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:5px">
+        ${serials.map(s=>`
+          <label style="display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:6px 8px;cursor:pointer">
+            <input type="checkbox" class="rec-chk" data-rec="${r.id}" data-serial="${s}" data-destino="${r.sede_destino}" style="cursor:pointer" onchange="updRecBtn()">
+            <span style="font-family:monospace;font-size:11px;color:var(--y)">${s}</span>
+          </label>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('btnConfirmarRec').disabled=true;
+  openM('mRecepcion');
+}
+
+function selAllRec(ri,val){
+  const chks=document.querySelectorAll('.rec-chk');
+  // Select all in the same recepcion index
+  const pending=isAdmin()?S.recepciones:S.recepciones.filter(r=>r.sede_destino===S.perfil?.sede);
+  const recId=pending[ri]?.id;
+  chks.forEach(c=>{if(c.dataset.rec===recId)c.checked=val;});
+  updRecBtn();
+}
+
+function updRecBtn(){
+  const any=[...document.querySelectorAll('.rec-chk')].some(c=>c.checked);
+  document.getElementById('btnConfirmarRec').disabled=!any;
+}
+
+async function confirmarRecepcion(){
+  const chks=[...document.querySelectorAll('.rec-chk:checked')];
+  if(!chks.length)return;
+  const now=new Date().toISOString();
+  // Group by recepcion id
+  const byRec={};
+  chks.forEach(c=>{
+    if(!byRec[c.dataset.rec])byRec[c.dataset.rec]={destino:c.dataset.destino,serials:[]};
+    byRec[c.dataset.rec].serials.push(c.dataset.serial);
+  });
+  // Also get unchecked per recepcion (desviados)
+  const allChks=[...document.querySelectorAll('.rec-chk')];
+  const unchecked={};
+  allChks.forEach(c=>{
+    if(!c.checked){
+      if(!unchecked[c.dataset.rec])unchecked[c.dataset.rec]=[];
+      unchecked[c.dataset.rec].push(c.dataset.serial);
+    }
+  });
+  try{
+    for(const [recId,data] of Object.entries(byRec)){
+      const rec=S.recepciones.find(r=>r.id===recId);
+      if(!rec)continue;
+      const desviados=unchecked[recId]||[];
+      // 1. Move confirmed ULDs to destino sede with llegada mark
+      for(const serial of data.serials){
+        const u=S.ulds.find(x=>x.serial===serial);
+        if(!u)continue;
+        await req(`ulds?id=eq.${u.id}`,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{sede:data.destino,ultima_actualizacion:now,llegada_at:now,llegada_nota:`Recibido de ${SEDES[rec.sede_origen]?.name||rec.sede_origen}${rec.vuelo?' vía '+rec.vuelo:''}`}});
+      }
+      // 2. Move deviated ULDs to DEV sede
+      for(const serial of desviados){
+        const u=S.ulds.find(x=>x.serial===serial);
+        if(!u)continue;
+        await req(`ulds?id=eq.${u.id}`,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{sede:'DEV',ultima_actualizacion:now,llegada_at:now,llegada_nota:`⚠ Desviado — esperado en ${SEDES[data.destino]?.name||data.destino}`}});
+      }
+      // 3. Register entrada movement for confirmed
+      if(data.serials.length){
+        await req('movimientos',{m:'POST',h:{'Prefer':'return=minimal'},b:{tipo:'entrada',sede_origen:rec.sede_origen,sede_destino:data.destino,vuelo:rec.vuelo,fecha:now,ulds_seriales:data.serials,notas:'Recepción confirmada',usuario:S.perfil?.email}});
+      }
+      // 4. Register desvio movement
+      if(desviados.length){
+        await req('movimientos',{m:'POST',h:{'Prefer':'return=minimal'},b:{tipo:'salida',sede_origen:rec.sede_origen,sede_destino:'DEV',vuelo:rec.vuelo,fecha:now,ulds_seriales:desviados,notas:'⚠ Desviación — no recibido en destino',usuario:S.perfil?.email}});
+      }
+      // 5. Mark recepcion as completed
+      const allConfirmed=desviados.length===0;
+      await req(`recepciones?id=eq.${recId}`,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{status:'completada',ulds_confirmados:data.serials,ulds_desviados:desviados,usuario_destino:S.perfil?.email,fecha_recepcion:now}});
+    }
+    closeM('mRecepcion');
+    toast(`✓ Recepción confirmada`,'ok');
+    await loadAll();
+  }catch(e){showA('recepcionAlert','Error: '+e.message,'al-err');}
+}
+
+function popSelects(){
+  const all=Object.keys(SEDES).filter(s=>s!=='DEV'||isAdmin());const opts=all.map(s=>`<option value="${s}">${SEDES[s].name}</option>`).join('');
+  const mySede=S.perfil?.sede;
+  const myOpts=(mySede?[mySede,...all.filter(s=>s!==mySede)]:all).map(s=>`<option value="${s}">${SEDES[s].name}</option>`).join('');
+  ['aSede','maSede'].forEach(id=>{const el=document.getElementById(id);if(el){el.innerHTML=myOpts;if(mySede)el.value=mySede;}});
+  ['vOrig','vDest','rOrig','rDest'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+}
+</script>
+</body>
+</html>
