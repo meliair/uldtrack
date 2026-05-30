@@ -764,8 +764,6 @@ async function reloadRutasIfNeeded(){
 }
 
 function prepMov(){
-  // Reload rutas inline
-  req('rutas?activo=eq.true&order=numero_vuelo.asc').then(r=>{S.rutas=r;populateVueloSelector();}).catch(()=>populateVueloSelector());
   const sl=[...S.sel].map(id=>S.ulds.find(u=>u.id===id)).filter(Boolean);
   document.getElementById('movTitle').textContent=S.mode==='salida'?`Salida — ${S.sel.size} ULDs`:`Entrada — ${S.sel.size} ULDs`;
   document.getElementById('movSedeLbl').textContent=S.mode==='salida'?'Sede destino *':'Sede origen *';
@@ -775,6 +773,7 @@ function prepMov(){
   ['movVuelo','movNotas'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('movRedes').value='0';document.getElementById('movLonas').value='0';
   document.getElementById('movAlert').className='hidden';
+  populateVueloSelector();
 }
 async function saveMov(){
   const sd=document.getElementById('movSede').value;
@@ -1137,17 +1136,13 @@ function clearGlobalSelUI(){document.querySelectorAll('.uld-chk').forEach(c=>c.c
 function populateVueloSelector(){
   const sel = document.getElementById('movVueloSel');
   if(!sel) return;
-  if(!S.rutas||!S.rutas.length){
-    sel.innerHTML='<option value="">⚠ Sin vuelos en catálogo — ve a pestaña Vuelos</option>';
-    document.getElementById('movVuelo').value='';
+  const rutas = S.rutas||[];
+  if(!rutas.length){
+    sel.innerHTML='<option value="">⚠ Sin vuelos — agrega en pestaña Vuelos</option>';
     return;
   }
   sel.innerHTML = '<option value="">— Selecciona un vuelo —</option>'
-    + S.rutas.map(r=>{
-      const label = r.numero_vuelo + ' · ' + (SEDES[r.origen]?.name||r.origen||'—') + ' → ' + (SEDES[r.destino]?.name||r.destino||'—') + (r.aerolinea?' ('+r.aerolinea+')':'');
-      return '<option value="'+r.numero_vuelo+'">'+label+'</option>';
-    }).join('');
-  document.getElementById('movVuelo').value='';
+    + rutas.map(r=>'<option value="'+r.numero_vuelo+'">'+r.numero_vuelo+' · '+(SEDES[r.origen]?.name||r.origen||'—')+' → '+(SEDES[r.destino]?.name||r.destino||'—')+(r.aerolinea?' ('+r.aerolinea+')':'')+'</option>').join('');
 }
 
 function onVueloSelChange(){
