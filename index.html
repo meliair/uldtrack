@@ -505,10 +505,7 @@ function isAdmin(){return['admin','master'].includes(S.perfil?.rol)}
 function canEdit(){return['actualizador','admin','master'].includes(S.perfil?.rol)}
 function showA(id,msg,cls){const el=document.getElementById(id);if(!el)return;el.className='alert '+cls;el.textContent=msg;el.classList.remove('hidden');setTimeout(()=>{if(el.textContent===msg)el.classList.add('hidden')},5000)}
 function openM(id){
-  if(id==='mMov'){
-    reloadRutasIfNeeded().then(()=>{prepMov();document.getElementById('mMov').classList.remove('hidden');});
-    return;
-  }
+  if(id==='mMov'){prepMov();document.getElementById('mMov').classList.remove('hidden');return;}
   document.getElementById(id).classList.remove('hidden');
 }
 function closeM(id){document.getElementById(id).classList.add('hidden')}
@@ -633,8 +630,7 @@ function moverDesdeSearch(uid, sedeActual){
   ['movVuelo','movNotas'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('movRedes').value='0';document.getElementById('movLonas').value='0';
   document.getElementById('movAlert').className='hidden';
-  populateVueloSelector();
-  document.getElementById('mMov').classList.remove('hidden');
+  document.getElementById('movAlert').className='hidden';
 }
 
 function renderStock(){
@@ -768,6 +764,8 @@ async function reloadRutasIfNeeded(){
 }
 
 function prepMov(){
+  // Reload rutas inline
+  req('rutas?activo=eq.true&order=numero_vuelo.asc').then(r=>{S.rutas=r;populateVueloSelector();}).catch(()=>populateVueloSelector());
   const sl=[...S.sel].map(id=>S.ulds.find(u=>u.id===id)).filter(Boolean);
   document.getElementById('movTitle').textContent=S.mode==='salida'?`Salida — ${S.sel.size} ULDs`:`Entrada — ${S.sel.size} ULDs`;
   document.getElementById('movSedeLbl').textContent=S.mode==='salida'?'Sede destino *':'Sede origen *';
