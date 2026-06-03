@@ -467,6 +467,13 @@ tr:hover td{background:var(--s3)}
 
 <script>
 const SB='https://fpcxdzmamcfycmfwityi.supabase.co';
+
+// On page load, always show login - no session persistence
+window.addEventListener('load', function(){
+  document.getElementById('pg-login').style.display='flex';
+  document.getElementById('mainApp').style.display='none';
+  document.getElementById('mainApp').classList.add('hidden');
+});
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwY3hkem1hbWNmeWNtZndpdHlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNjg1MzQsImV4cCI6MjA5NDc0NDUzNH0.yZOgpZ4r_TuDpjdzf3Z_TPuGtuquPW_w-C8jS8h73Kk';
 const RATE=5;
 const SEDES={QRO:{name:'Querétaro',type:'hub',max:null},MTY:{name:'Monterrey',type:'est',max:22},CUN:{name:'Cancún',type:'est',max:22},MID:{name:'Mérida',type:'est',max:11},MZT:{name:'Mazatlán',type:'est',max:11},CUL:{name:'Culiacán',type:'est',max:11},LAP:{name:'La Paz',type:'est',max:11},CJS:{name:'Cd. Juárez',type:'est',max:11},CUU:{name:'Chihuahua',type:'est',max:11},TIJ:{name:'Tijuana',type:'est',max:11},HMO:{name:'Hermosillo',type:'est',max:11}};
