@@ -161,13 +161,13 @@ tr:hover td{background:var(--s3)}
     </div>
     <div id="loginAlert" class="hidden"></div>
     <div id="loginForm">
-      <label class="fl">Correo</label><input class="fi" id="lEmail" type="email" placeholder="correo@empresa.com">
+      <label class="fl">Correo</label><input class="fi" id="lEmail" type="email" placeholder="usuario@mercadolibre.com">
       <label class="fl">Contraseña</label><input class="fi" id="lPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
       <button class="btn-y" onclick="doLogin()">Entrar</button>
     </div>
     <div id="regForm" class="hidden">
       <label class="fl">Nombre</label><input class="fi" id="rNombre" type="text" placeholder="Tu nombre completo">
-      <label class="fl">Correo</label><input class="fi" id="rEmail" type="email" placeholder="correo@empresa.com">
+      <label class="fl">Correo</label><input class="fi" id="rEmail" type="email" placeholder="usuario@mercadolibre.com">
       <label class="fl">Contraseña</label><input class="fi" id="rPass" type="password" placeholder="Mínimo 6 caracteres">
       <button class="btn-y" onclick="doRegister()">Crear cuenta</button>
       <p style="font-size:11px;color:var(--tx3);text-align:center;margin-top:10px">Entrarás como <strong>Lector</strong> hasta que un Admin te asigne rol y sede.</p>
@@ -518,12 +518,14 @@ function setLTab(t){
 async function doLogin(){
   const e=document.getElementById('lEmail').value.trim(),p=document.getElementById('lPass').value;
   if(!e||!p){showA('loginAlert','Completa los campos','al-err');return;}
+  if(!e.endsWith('@mercadolibre.com')&&!e.endsWith('@mercadolibre.com.mx')){showA('loginAlert','Solo se permite acceso con correo @mercadolibre.com','al-err');return;}
   try{S.session=await auth('token?grant_type=password',{email:e,password:p});await startApp();}
   catch(err){showA('loginAlert',err.message,'al-err');}
 }
 async function doRegister(){
   const n=document.getElementById('rNombre').value.trim(),e=document.getElementById('rEmail').value.trim(),p=document.getElementById('rPass').value;
   if(!n||!e||!p){showA('loginAlert','Completa todos los campos','al-err');return;}
+  if(!e.endsWith('@mercadolibre.com')&&!e.endsWith('@mercadolibre.com.mx')){showA('loginAlert','Solo se permite registro con correo @mercadolibre.com','al-err');return;}
   if(p.length<6){showA('loginAlert','Contraseña mínimo 6 caracteres','al-err');return;}
   try{S.session=await auth('signup',{email:e,password:p,data:{nombre:n}});await startApp();}
   catch(err){showA('loginAlert',err.message,'al-err');}
@@ -535,6 +537,11 @@ function doLogout(){
 }
 
 async function startApp(){
+  // Verify session is still valid with Supabase
+  try{
+    const check = await fetch(SB+'/auth/v1/user',{headers:{'apikey':KEY,'Authorization':'Bearer '+S.session?.access_token}});
+    if(!check.ok){doLogout();return;}
+  }catch{doLogout();return;}
   document.getElementById('pg-login').style.display='none';
   const app=document.getElementById('mainApp');app.classList.remove('hidden');app.style.display='flex';
   try{const uid=S.session?.user?.id;if(uid){const p=await req(`perfiles?id=eq.${uid}`);S.perfil=p[0]||{rol:'lector',sede:null};}}
@@ -1030,7 +1037,7 @@ async function deleteUser(id, email){
     // Delete from perfiles first
     await req(`perfiles?id=eq.${id}`,{m:'DELETE',h:{'Prefer':'return=minimal'}});
     // Delete from Supabase Auth via admin endpoint
-    const res = await fetch(`${SB_URL}/auth/v1/admin/users/${id}`,{
+    const res = await fetch(`${SB}/auth/v1/admin/users/${id}`,{
       method:'DELETE',
       headers:{'apikey':KEY,'Authorization':'Bearer '+S.session.access_token}
     });
