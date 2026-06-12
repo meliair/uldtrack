@@ -224,7 +224,7 @@ tr:hover td{background:var(--s3)}
         <div class="mode-row">
           <button class="mode-btn active" id="modeOut" onclick="setMode('salida')">✈ SALIDA</button>
           <button class="mode-btn" id="modeIn" onclick="setMode('entrada')">↩ ENTRADA</button>
-        <button class="mode-btn" id="modeDano" onclick="toggleDanoSelected()" style="color:var(--w2);border-color:rgba(239,68,68,.3)">⚠ Marcar daño</button>
+        <button class="mode-btn" id="modeDano" onclick="toggleDanoSelected()" style="color:var(--w2);border-color:rgba(239,68,68,.3)">⚠ Marcar/Desmarcar daño</button>
         </div>
         <div class="action-bar">
           <div style="display:flex;align-items:center;gap:6px">
@@ -362,7 +362,7 @@ tr:hover td{background:var(--s3)}
         <div class="tbl-wrap"><table><thead><tr><th>Serial</th><th>Sede</th><th>Días</th><th>Estado</th><th></th></tr></thead><tbody id="candTable"></tbody></table></div>
       </div>
       <div id="ab-hist" class="hidden">
-        <div class="tbl-wrap"><table><thead><tr><th>Tipo</th><th>Serial</th><th>Sede</th><th>Usuario</th><th>Fecha</th></tr></thead><tbody id="abHistTable"></tbody></table></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Tipo</th><th>Serial</th><th>Sede</th><th>Motivo</th><th>Usuario</th><th>Fecha</th></tr></thead><tbody id="abHistTable"></tbody></table></div>
       </div>
     </div>
 
@@ -496,6 +496,13 @@ async function auth(path,body){
 }
 
 function dag(iso){return Math.floor((Date.now()-new Date(iso).getTime())/864e5)}
+function fmtInvBadge(iso){
+  if(!iso) return '<span style="font-size:9px;color:var(--tx3)">Sin inv.</span>';
+  const fecha=new Date(iso).toLocaleDateString('es-MX',{day:'2-digit',month:'short'});
+  const color=verificadoHoy(iso)?'var(--ok)':'var(--w1)';
+  const bg=verificadoHoy(iso)?'var(--okb)':'var(--w1b)';
+  return '<span style="font-size:9px;padding:1px 5px;border-radius:50px;background:'+bg+';color:'+color+';font-weight:700">📋 '+fecha+'</span>';
+}
 function verificadoHoy(iso){
   if(!iso) return false;
   const hoy=new Date().toISOString().split('T')[0];
@@ -764,11 +771,11 @@ function renderULDs(){
       +'<div style="display:flex;gap:3px;margin-bottom:4px"><div class="ins-dot '+(u.tiene_red!==false?'ins-ok':'ins-no')+'">R</div><div class="ins-dot '+(u.tiene_lona!==false?'ins-ok':'ins-no')+'">L</div>'
       +(u.status_dano?'<div class="ins-dot" style="background:var(--w2b);color:var(--w2);width:auto;padding:0 4px">⚠ Daño</div>':'')
       +'</div>'
-      +'<div style="display:flex;gap:3px;flex-wrap:wrap">'
-      +'<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:50px;background:'+(d<=3?'var(--okb)':d<=7?'var(--w1b)':d<=30?'var(--w2b)':'var(--w3b)')+';color:'+dc(d)+'">'+(d===0?'hoy':d+'d')+'</span>'
-      +(verificadoHoy(u.inventario_verificado_at)?'<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:50px;background:var(--okb);color:var(--ok)">✓ Inv</span>':'')
+      +'<div style="display:flex;gap:3px;flex-wrap:wrap;align-items:center">'
+      +'<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:50px;background:'+(d<=3?'var(--okb)':d<=7?'var(--w1b)':d<=30?'var(--w2b)':'var(--w3b)')+';color:'+dc(d)+'" title="Días sin actualizar">'+(d===0?'hoy':d+'d')+'</span>'
+      +fmtInvBadge(u.inventario_verificado_at)
       +'</div>'
-      +llegadaBadge(u)
+
       +'</div>'
       +'</div>'
   }).join('');
@@ -991,18 +998,25 @@ async function saveAlta(){
   const sede=document.getElementById('aSede').value;
   if(!serial||serial.length<3){showA('altaAlert','El serial debe tener al menos 3 caracteres','al-err');return;}
   if(S.ulds.find(u=>u.serial===serial)){showA('altaAlert','Este serial ya existe','al-err');return;}
-  try{await req('ulds',{m:'POST',h:{'Prefer':'return=minimal'},b:{serial,tipo:document.getElementById('aTipo').value,sede,activo:true,ultima_actualizacion:new Date().toISOString(),status:'ok',owner:document.getElementById('aOwner').value,notas:'Alta — '+S.perfil?.email}});
-  showA('altaAlert',`✓ ${serial} dado de alta en ${SEDES[sede]?.name}`,'al-ok');document.getElementById('aSerial').value='';await loadAll();toast('✓ Alta registrada','ok');}
-  catch(e){showA('altaAlert','Error: '+e.message,'al-err');}
+  try{
+    const now=new Date().toISOString();
+    await req('ulds',{m:'POST',h:{'Prefer':'return=minimal'},b:{serial,tipo:document.getElementById('aTipo').value,sede,activo:true,ultima_actualizacion:now,status:'ok',owner:document.getElementById('aOwner').value,notas:'Alta — '+S.perfil?.email}});
+    await req('movimientos',{m:'POST',h:{'Prefer':'return=minimal'},b:{tipo:'alta',sede_destino:sede,fecha:now,ulds_seriales:[serial],notas:'Alta de ULD',usuario:S.perfil?.email}});
+    showA('altaAlert','✓ '+serial+' dado de alta en '+(SEDES[sede]?.name||sede),'al-ok');
+    document.getElementById('aSerial').value='';await loadAll();toast('✓ Alta registrada','ok');
+  }catch(e){showA('altaAlert','Error: '+e.message,'al-err');}
 }
 async function saveAltaM(){
   const serial=document.getElementById('maSerial').value.toUpperCase().trim();
   const sede=document.getElementById('maSede').value;
   if(!serial||serial.length<3){showA('mAltaAlert','El serial debe tener al menos 3 caracteres','al-err');return;}
   if(S.ulds.find(u=>u.serial===serial)){showA('mAltaAlert','Serial ya existe','al-err');return;}
-  try{await req('ulds',{m:'POST',h:{'Prefer':'return=minimal'},b:{serial,tipo:document.getElementById('maTipo').value,sede,activo:true,ultima_actualizacion:new Date().toISOString(),status:'ok',owner:document.getElementById('maOwner').value,notas:'Alta — '+S.perfil?.email}});
-  closeM('mAlta');await loadAll();toast('✓ Alta: '+serial,'ok');}
-  catch(e){showA('mAltaAlert','Error: '+e.message,'al-err');}
+  try{
+    const now=new Date().toISOString();
+    await req('ulds',{m:'POST',h:{'Prefer':'return=minimal'},b:{serial,tipo:document.getElementById('maTipo').value,sede,activo:true,ultima_actualizacion:now,status:'ok',owner:document.getElementById('maOwner').value,notas:'Alta — '+S.perfil?.email}});
+    await req('movimientos',{m:'POST',h:{'Prefer':'return=minimal'},b:{tipo:'alta',sede_destino:sede,fecha:now,ulds_seriales:[serial],notas:'Alta de ULD',usuario:S.perfil?.email}});
+    closeM('mAlta');await loadAll();toast('✓ Alta: '+serial,'ok');
+  }catch(e){showA('mAltaAlert','Error: '+e.message,'al-err');}
 }
 function buscarBaja(){
   const serial=document.getElementById('bSerial').value.toUpperCase();
@@ -1017,10 +1031,17 @@ async function saveBaja(){
   const u=S.ulds.find(x=>x.serial===serial);
   if(!u){showA('bajaAlert','Serial no encontrado','al-err');return;}
   if(!motivo){showA('bajaAlert','Selecciona el motivo','al-err');return;}
-  if(!confirm(`¿Confirmas dar de baja ${serial}?`))return;
-  try{await req(`ulds?id=eq.${u.id}`,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{activo:false,notas:`Baja: ${motivo} — ${S.perfil?.email}`}});
-  showA('bajaAlert',`✓ ${serial} dado de baja. Se liberan $${RATE}/día.`,'al-ok');document.getElementById('bSerial').value='';document.getElementById('bMotivo').value='';document.getElementById('bajaInfo').classList.add('hidden');await loadAll();renderCand();toast('Baja: '+serial,'w2');}
-  catch(e){showA('bajaAlert','Error: '+e.message,'al-err');}
+  if(!confirm('¿Confirmas dar de baja '+serial+'?'))return;
+  try{
+    const now=new Date().toISOString();
+    await req('ulds?id=eq.'+u.id,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{activo:false,notas:'Baja: '+motivo+' — '+S.perfil?.email}});
+    await req('movimientos',{m:'POST',h:{'Prefer':'return=minimal'},b:{tipo:'baja',sede_origen:u.sede,fecha:now,ulds_seriales:[serial],notas:'Baja: '+motivo,usuario:S.perfil?.email}});
+    showA('bajaAlert','✓ '+serial+' dado de baja. Se liberan $'+RATE+'/día.','al-ok');
+    document.getElementById('bSerial').value='';
+    document.getElementById('bMotivo').value='';
+    document.getElementById('bajaInfo').classList.add('hidden');
+    await loadAll();renderCand();toast('Baja: '+serial,'w2');
+  }catch(e){showA('bajaAlert','Error: '+e.message,'al-err');}
 }
 function renderCand(){
   const list=S.ulds.filter(u=>dag(u.ultima_actualizacion)>30||u.status==='damage').sort((a,b)=>dag(b.ultima_actualizacion)-dag(a.ultima_actualizacion));
@@ -1028,10 +1049,20 @@ function renderCand(){
   document.getElementById('candTable').innerHTML=list.map(u=>{const d=dag(u.ultima_actualizacion);return`<tr><td class="serial-td">${u.serial}</td><td>${SEDES[u.sede]?.name||u.sede}</td><td>${db(d)}</td><td>${u.status==='damage'?'<span class="badge b-w2">Dañado</span>':'<span class="badge b-w3">Inactivo</span>'}</td><td><button style="padding:3px 8px;border-radius:6px;border:1px solid rgba(239,68,68,.3);background:var(--w2b);color:var(--w2);font-size:10px;font-weight:600;cursor:pointer" onclick="document.getElementById('bSerial').value='${u.serial}';buscarBaja()">Dar baja</button></td></tr>`}).join('')||'<tr><td colspan="5" class="empty">Sin candidatos</td></tr>';
 }
 function renderABHist(){
-  document.getElementById('abHistTable').innerHTML=S.movs.filter(m=>m.tipo==='alta'||m.tipo==='baja').slice(0,50).map(m=>{
-    const fd=new Date(m.fecha).toLocaleString('es-MX',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-    return`<tr><td><span class="badge ${m.tipo==='alta'?'b-ok':'b-w2'}">${m.tipo}</span></td><td style="font-family:monospace;font-size:10px">${(m.ulds_seriales||[]).slice(0,2).join(', ')}${(m.ulds_seriales||[]).length>2?` +${(m.ulds_seriales||[]).length-2}`:''}</td><td>${SEDES[m.sede_destino]?.name||m.sede_destino||'—'}</td><td style="font-size:10px;color:var(--tx3)">${m.usuario||'—'}</td><td style="font-size:10px;color:var(--tx3);white-space:nowrap">${fd}</td></tr>`;
-  }).join('')||'<tr><td colspan="5" class="empty">Sin registros</td></tr>';
+  const list=S.movs.filter(m=>m.tipo==='alta'||m.tipo==='baja').slice(0,100);
+  document.getElementById('abHistTable').innerHTML=list.length?list.map(m=>{
+    const fd=new Date(m.fecha).toLocaleString('es-MX',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const ser=(m.ulds_seriales||[]);
+    const sede=m.tipo==='alta'?(SEDES[m.sede_destino]?.name||m.sede_destino||'—'):(SEDES[m.sede_origen]?.name||m.sede_origen||'—');
+    return '<tr>'
+      +'<td><span class="badge '+(m.tipo==='alta'?'b-ok':'b-w2')+'">'+(m.tipo==='alta'?'➕ Alta':'🗑 Baja')+'</span></td>'
+      +'<td style="font-family:monospace;font-size:10px;color:var(--y)">'+ser.slice(0,3).join(', ')+(ser.length>3?' +'+( ser.length-3)+' más':'')+'</td>'
+      +'<td style="font-size:11px">'+sede+'</td>'
+      +'<td style="font-size:10px;color:var(--tx3)">'+( m.notas||'—')+'</td>'
+      +'<td style="font-size:10px;color:var(--tx3)">'+( m.usuario||'—')+'</td>'
+      +'<td style="font-size:10px;color:var(--tx3);white-space:nowrap">'+fd+'</td>'
+      +'</tr>';
+  }).join(''):'<tr><td colspan="6" class="empty">Sin registros de altas o bajas</td></tr>';
 }
 
 // USUARIOS
