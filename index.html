@@ -224,6 +224,7 @@ tr:hover td{background:var(--s3)}
         <div class="mode-row">
           <button class="mode-btn active" id="modeOut" onclick="setMode('salida')">✈ SALIDA</button>
           <button class="mode-btn" id="modeIn" onclick="setMode('entrada')">↩ ENTRADA</button>
+        <button class="mode-btn" id="modeDano" onclick="toggleDanoSelected()" style="color:var(--w2);border-color:rgba(239,68,68,.3)">⚠ Marcar daño</button>
         </div>
         <div class="action-bar">
           <div style="display:flex;align-items:center;gap:6px">
@@ -495,6 +496,11 @@ async function auth(path,body){
 }
 
 function dag(iso){return Math.floor((Date.now()-new Date(iso).getTime())/864e5)}
+function verificadoHoy(iso){
+  if(!iso) return false;
+  const hoy=new Date().toISOString().split('T')[0];
+  return iso.split('T')[0]===hoy;
+}
 function horasAgo(iso){return Math.floor((Date.now()-new Date(iso).getTime())/3600000)}
 function llegadaBadge(u){
   if(!u.llegada_at) return '';
@@ -747,14 +753,24 @@ function renderULDs(){
   g.innerHTML=list.map(u=>{
     const d=dag(u.ultima_actualizacion);const isSel=S.sel.has(u.id);
     const bc=isSel?(S.mode==='salida'?'var(--y)':'var(--ok)'):dc(d);
-    return`<div class="uld-card${isSel?(S.mode==='salida'?' sel-out':' sel-in'):''}" style="border-color:${bc}" onclick="togULD('${u.id}')" id="uc-${u.id}">
-      ${isSel?`<div class="sel-check ${S.mode==='salida'?'sc-out':'sc-in'}">${S.mode==='salida'?'↑':'↓'}</div>`:''}
-      <div class="uld-serial">${u.serial}</div>
-      <div class="uld-tipo">${u.tipo==='PAG'?'Normal':'Media'}</div>
-      <div class="ins-row"><div class="ins-dot ${u.tiene_red!==false?'ins-ok':'ins-no'}">R</div><div class="ins-dot ${u.tiene_lona!==false?'ins-ok':'ins-no'}">L</div></div>
-      <span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:50px;background:${d<=3?'var(--okb)':d<=7?'var(--w1b)':d<=30?'var(--w2b)':'var(--w3b)'};color:${dc(d)}">${d===0?'hoy':d+'d'}</span>
-      ${llegadaBadge(u)}
-    </div>`;
+    return '<div class="uld-card'+(isSel?(S.mode==='salida'?' sel-out':' sel-in'):'')+'" style="border-color:'+bc+(u.status_dano?';border-color:var(--w2)':'')+'" id="uc-'+u.id+'">'
+      +(isSel?'<div class="sel-check '+(S.mode==='salida'?'sc-out':'sc-in')+'">'+(S.mode==='salida'?'↑':'↓')+'</div>':'')
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">'
+      +'<div class="uld-serial" onclick="togULD(\''+u.id+'\')" style="cursor:pointer">'+u.serial+'</div>'
+      +(canEdit()?'<input type="checkbox" title="Verificado en inventario" '+(verificadoHoy(u.inventario_verificado_at)?'checked':'')+' onclick="event.stopPropagation();toggleVerificado(\''+u.id+'\')" style="width:14px;height:14px;cursor:pointer;accent-color:var(--ok)">':'')
+      +'</div>'
+      +'<div onclick="togULD(\''+u.id+'\')" style="cursor:pointer">'
+      +'<div class="uld-tipo">'+(u.tipo==='PAG'?'Normal':'Media')+'</div>'
+      +'<div style="display:flex;gap:3px;margin-bottom:4px"><div class="ins-dot '+(u.tiene_red!==false?'ins-ok':'ins-no')+'">R</div><div class="ins-dot '+(u.tiene_lona!==false?'ins-ok':'ins-no')+'">L</div>'
+      +(u.status_dano?'<div class="ins-dot" style="background:var(--w2b);color:var(--w2);width:auto;padding:0 4px">⚠ Daño</div>':'')
+      +'</div>'
+      +'<div style="display:flex;gap:3px;flex-wrap:wrap">'
+      +'<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:50px;background:'+(d<=3?'var(--okb)':d<=7?'var(--w1b)':d<=30?'var(--w2b)':'var(--w3b)')+';color:'+dc(d)+'">'+(d===0?'hoy':d+'d')+'</span>'
+      +(verificadoHoy(u.inventario_verificado_at)?'<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:50px;background:var(--okb);color:var(--ok)">✓ Inv</span>':'')
+      +'</div>'
+      +llegadaBadge(u)
+      +'</div>'
+      +'</div>'
   }).join('');
 }
 function togULD(id){
@@ -915,7 +931,7 @@ function renderKPIs(){
   const w1=ul.filter(u=>{const d=dag(u.ultima_actualizacion);return d>3&&d<=7}).length;
   const w2=ul.filter(u=>{const d=dag(u.ultima_actualizacion);return d>7&&d<=30}).length;
   const w3=ul.filter(u=>dag(u.ultima_actualizacion)>30).length;
-  const dmg=ul.filter(u=>u.status==='damage').length;
+  const dmg=ul.filter(u=>u.status_dano||u.status==='damage').length;
   document.getElementById('kpiCards').innerHTML=`<div class="mc y"><div class="mc-label">Total ULDs</div><div class="mc-val">${ul.length}</div></div><div class="mc ok"><div class="mc-label">Al corriente</div><div class="mc-val">${ok}</div><div class="mc-sub">0–3 días</div></div><div class="mc w1"><div class="mc-label">Atención</div><div class="mc-val">${w1}</div><div class="mc-sub">4–7 días</div></div><div class="mc w2"><div class="mc-label">Urgente</div><div class="mc-val">${w2}</div><div class="mc-sub">8–30 días</div></div><div class="mc w3"><div class="mc-label">Pérdida</div><div class="mc-val">${w3}</div><div class="mc-sub">>30 días</div></div><div class="mc w2"><div class="mc-label">Dañados</div><div class="mc-val">${dmg}</div></div>`;
   document.getElementById('kpiBars').innerHTML=[['OK 0-3d',ok,'var(--ok)'],['Atención 4-7d',w1,'var(--w1)'],['Urgente 8-30d',w2,'var(--w2)'],['Pérdida >30d',w3,'var(--w3)'],['Dañados',dmg,'var(--w2)']].map(([l,n,c])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:11px;color:var(--tx2);min-width:90px;text-align:right">${l}</div><div style="flex:1;height:6px;background:var(--s4);border-radius:3px;overflow:hidden"><div style="width:${Math.round(n/t*100)}%;height:100%;background:${c};border-radius:3px"></div></div><div style="font-size:11px;font-weight:700;color:${c};min-width:50px">${n} <span style="font-size:9px;color:var(--tx3)">(${Math.round(n/t*100)}%)</span></div></div>`).join('');
   const bs={};ul.forEach(u=>{bs[u.sede]=(bs[u.sede]||0)+1});
@@ -928,7 +944,7 @@ function renderKPIs(){
 // FACTURACIÓN
 function renderFac(){
   const ul=S.ulds;const n=ul.length;
-  const mu=ul.filter(u=>dag(u.ultima_actualizacion)>30||u.status==='damage');
+  const mu=ul.filter(u=>dag(u.ultima_actualizacion)>30||u.status_dano||u.status==='damage');
   const dt=n*RATE;const dm=mu.length*RATE;const du=dt-dm;
   document.getElementById('facCards').innerHTML=`<div class="mc y"><div class="mc-label">Costo hoy</div><div class="mc-val">${fmt(dt)}</div><div class="mc-sub">USD / día</div></div><div class="mc ok"><div class="mc-label">Costo útil</div><div class="mc-val">${fmt(du)}</div><div class="mc-sub">ULDs activos</div></div><div class="mc w2"><div class="mc-label">Costo muerto</div><div class="mc-val">${fmt(dm)}</div><div class="mc-sub">sin retorno/día</div></div><div class="mc y"><div class="mc-label">Mes estimado</div><div class="mc-val">${fmt(dt*30)}</div><div class="mc-sub">30 días</div></div>`;
   const bs={};ul.forEach(u=>{if(!bs[u.sede])bs[u.sede]={n:0,mu:0};bs[u.sede].n++;if(dag(u.ultima_actualizacion)>30||u.status==='damage')bs[u.sede].mu++;});
@@ -1316,6 +1332,44 @@ async function confirmarRecepcion(){
     toast(`✓ Recepción confirmada`,'ok');
     await loadAll();
   }catch(e){showA('recepcionAlert','Error: '+e.message,'al-err');}
+}
+
+async function toggleDanoSelected(){
+  const sel=[...S.sel];
+  if(!sel.length){toast('Selecciona al menos un ULD','w2');return;}
+  const u0=S.ulds.find(x=>x.id===sel[0]);
+  const nuevo=!u0?.status_dano;
+  try{
+    for(const uid of sel){
+      await req('ulds?id=eq.'+uid,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{status_dano:nuevo}});
+      const u=S.ulds.find(x=>x.id===uid);if(u)u.status_dano=nuevo;
+    }
+    S.sel=new Set();renderULDs();renderStock();
+    toast((nuevo?'⚠ '+sel.length+' ULDs marcados como dañados':sel.length+' ULDs desmarcados'),nuevo?'w2':'ok');
+  }catch(e){toast('Error: '+e.message,'w2');}
+}
+
+async function toggleVerificado(uid){
+  const u=S.ulds.find(x=>x.id===uid);if(!u)return;
+  const yaVerif=verificadoHoy(u.inventario_verificado_at);
+  const val=yaVerif?null:new Date().toISOString();
+  try{
+    await req('ulds?id=eq.'+uid,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{inventario_verificado_at:val}});
+    u.inventario_verificado_at=val;
+    renderULDs();
+    toast(yaVerif?'Verificación removida':'✓ ULD verificado en inventario','ok');
+  }catch(e){toast('Error: '+e.message,'w2');}
+}
+
+async function toggleDano(uid){
+  const u=S.ulds.find(x=>x.id===uid);if(!u)return;
+  const nuevo=!u.status_dano;
+  try{
+    await req('ulds?id=eq.'+uid,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{status_dano:nuevo}});
+    u.status_dano=nuevo;
+    renderULDs();renderStock();
+    toast(nuevo?'⚠ ULD marcado como dañado':'ULD desmarcado como dañado',nuevo?'w2':'ok');
+  }catch(e){toast('Error: '+e.message,'w2');}
 }
 
 function popSelects(){
