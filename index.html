@@ -724,7 +724,10 @@ function renderGlobalULDs(){
       +'<td style="font-size:11px;color:var(--tx2)">'+(u.owner||'—')+'</td>'
       +'<td>'+db(d)+'</td>'
       +'<td>'+statusBadge+'</td>'
-      +'<td>'+movBtn+'</td>'
+      +'<td style="display:flex;gap:4px;flex-wrap:wrap">'
+      +movBtn
+      +(canEdit()?'<button class="btn btn-danger btn-sm" onclick="toggleDanoGlobal(\''+u.id+'\')">⚠ '+(u.status_dano?'Desmarcar daño':'Marcar daño')+'</button>':'')
+      +'</td>'
       +'</tr>';
   }).join('')||'<tr><td colspan="7" class="empty">Sin ULDs</td></tr>';
 }
@@ -1377,6 +1380,17 @@ async function toggleDanoSelected(){
     }
     S.sel=new Set();renderULDs();renderStock();
     toast((nuevo?'⚠ '+sel.length+' ULDs marcados como dañados':sel.length+' ULDs desmarcados'),nuevo?'w2':'ok');
+  }catch(e){toast('Error: '+e.message,'w2');}
+}
+
+async function toggleDanoGlobal(uid){
+  const u=S.ulds.find(x=>x.id===uid);if(!u)return;
+  const nuevo=!u.status_dano;
+  try{
+    await req('ulds?id=eq.'+uid,{m:'PATCH',h:{'Prefer':'return=minimal'},b:{status_dano:nuevo}});
+    u.status_dano=nuevo;
+    renderGlobalULDs();renderStock();
+    toast(nuevo?'⚠ Marcado como dañado':'Daño desmarcado',nuevo?'w2':'ok');
   }catch(e){toast('Error: '+e.message,'w2');}
 }
 
